@@ -80,6 +80,7 @@ trim_sup(Name) ->
 
 % @doc Sync posthook for autotesting while development
 autotest_on_compile() ->
+    lager:start(),
     ok = sync:start(),
     RunTests = fun(Mods) ->
         _ = [Mod:test() || Mod <- Mods, 
