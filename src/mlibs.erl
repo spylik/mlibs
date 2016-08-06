@@ -79,10 +79,7 @@ trim_sup(Name) ->
     list_to_atom(lists:takewhile(fun(X) -> X /=$_ end, atom_to_list(Name))).
 
 % @doc Sync posthook for autotesting while development
-% after compile able to start erlang shell someting like this
-% erl -pa ebin/ test/ -env ERL_LIBS deps -run mlibs autotest_on_compile
 autotest_on_compile() ->
-    lager:start(),
     ok = sync:start(),
     RunTests = fun(Mods) ->
         _ = [Mod:test() || Mod <- Mods, 
