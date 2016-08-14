@@ -3,7 +3,6 @@
 -compile(export_all).
 
 % recieve loop
-
 recieve_loop() -> recieve_loop([], 15). 
 
 recieve_loop(Acc) ->
@@ -14,6 +13,8 @@ recieve_loop(Acc, Timeout) ->
         {got, Data} -> recieve_loop([Data|Acc],Timeout)
         after Timeout -> Acc
     end.
+
+spawn_wait_loop(SendToPid) -> spawn_link(?MODULE, wait_msg_loop, [SendToPid]).
 
 % waiting loop
 wait_msg_loop(SendToPid) ->
