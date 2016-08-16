@@ -1,7 +1,12 @@
 PROJECT = teaser
 
-SHELL_DEPS = sync
+SHELL_DEPS = sync lager
 
-SHELL_OPTS = -pa ebin/ test/ -env ERL_LIBS deps -run mlibs autotest_on_compile
+ifeq ($(USER),travis)
+    TEST_DEPS += covertool
+    dep_covertool = git https://github.com/idubrov/covertool
+endif
+
+SHELL_OPTS = -pa ebin/ test/ -env ERL_LIBS deps -eval 'lager:start()' -run mlibs autotest_on_compile
 
 include erlang.mk
