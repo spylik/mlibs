@@ -88,3 +88,22 @@ autotest_on_compile() ->
         [eunit:test(Mod) || Mod <- Mods]
     end,
     sync:onsync(RunTests).
+
+% @doc disable lager output to console
+dclog() ->
+    lager:set_loglevel(lager_console_backend, critical).
+
+% @doc enable lager output to console
+eclog() ->
+    GetConfig = fun() -> 
+        {ok, Data} = application:get_env(lager, handlers), 
+        {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
+        Value
+    end,
+
+    try GetConfig() of 
+        Value -> eclog(Value)
+    catch _:_ ->
+        eclog(info)
+    end.
+eclog(LogLevel) -> lager:set_loglevel(lager_console_backend, LogLevel).
