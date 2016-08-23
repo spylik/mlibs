@@ -35,7 +35,7 @@ random_atom() ->
     Password :: list().
 
 generate_password(Number) ->
-    lists:map(fun (_) -> random:uniform(90)+$\s+1 end, lists:seq(1,Number)).
+    lists:map(fun (_) -> rand:uniform(90)+$\s+1 end, lists:seq(1,Number)).
 
 % @doc generate binary/atom key from list
 % todo(maybe): implement concuting binaries not via lists
