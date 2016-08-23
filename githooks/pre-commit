@@ -2,7 +2,7 @@
 
 if [ -e "$GIT_DIR/../newver.sh" ]
 then 
-	$GIT_DIR/../newver.sh
+	$GIT_DIR/../newver.sh -p
 else 
 	if [ -e "$GIT_DIR/../deps/teaser/newver.sh" ] 
 	then 
