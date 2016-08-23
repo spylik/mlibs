@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ -e "$GIT_DIR/../newver.sh" ]
+then 
+	$GIT_DIR/../newver.sh
+else 
+	if [ -e "$GIT_DIR/../deps/teaser/newver.sh" ] 
+	then 
+		$GIT_DIR/../deps/teaser/newver.sh -p 
+	fi 
+fi
