@@ -35,7 +35,7 @@ random_atom() ->
     Password :: list().
 
 generate_password(Number) ->
-    lists:map(fun (_) -> random:uniform(90)+$\s+1 end, lists:seq(1,Number)).
+    lists:map(fun (_) -> rand:uniform(90)+$\s+1 end, lists:seq(1,Number)).
 
 % @doc generate binary/atom key from list
 % todo(maybe): implement concuting binaries not via lists
@@ -88,3 +88,34 @@ autotest_on_compile() ->
         [eunit:test(Mod) || Mod <- Mods]
     end,
     sync:onsync(RunTests).
+
+% @doc discover modules and tests
+discover() ->
+    [case filelib:ensure_dir(Dir) of
+        ok ->
+            lists:map(fun(Module) ->
+                    code:ensure_loaded(list_to_atom(lists:takewhile(fun(X) -> X /= $. end, lists:subtract(Module,Dir))))
+                end,
+                filelib:wildcard(Dir++"*.erl")
+            );
+        _ -> ok
+    end || Dir <- ["src/","test/"]].
+
+% @doc disable lager output to console
+dclog() ->
+    lager:set_loglevel(lager_console_backend, critical).
+
+% @doc enable lager output to console
+eclog() ->
+    GetConfig = fun() -> 
+        {ok, Data} = application:get_env(lager, handlers), 
+        {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
+        Value
+    end,
+
+    try GetConfig() of 
+        Value -> eclog(Value)
+    catch _:_ ->
+        eclog(info)
+    end.
+eclog(LogLevel) -> lager:set_loglevel(lager_console_backend, LogLevel).
