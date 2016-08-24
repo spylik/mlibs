@@ -89,6 +89,18 @@ autotest_on_compile() ->
     end,
     sync:onsync(RunTests).
 
+% @doc discover modules and tests
+discover() ->
+    [case filelib:ensure_dir(Dir) of
+        ok ->
+            lists:map(fun(Module) ->
+                    code:ensure_loaded(list_to_atom(lists:takewhile(fun(X) -> X /= $. end, lists:subtract(Module,Dir))))
+                end,
+                filelib:wildcard(Dir++"*.erl")
+            );
+        _ -> ok
+    end || Dir <- ["src/","test/"]].
+
 % @doc disable lager output to console
 dclog() ->
     lager:set_loglevel(lager_console_backend, critical).
