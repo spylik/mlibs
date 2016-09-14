@@ -1,7 +1,8 @@
 % debug macros (development only, will not available once compiled in release mode)
+% todo: rid macros from the code with parse transform for release mode
 -ifndef(release).
     -define(here, error_logger:info_msg("(~p)~p: we are here", [?LINE,?MODULE]), true).
-    -define(debug(Msg), error_logger:info_msg(lists:concat(["(~p)~p: ", Msg])), true).
+    -define(debug(Msg), error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]), true).
     -define(debug(Msg,Arg),
         error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg)), true
     ).
