@@ -10,6 +10,8 @@ recieve_loop() -> recieve_loop([], 15, 'got').
 recieve_loop(Acc) ->
     recieve_loop(Acc, 15, 'got').
 
+recieve_loop(Acc,Timeout) -> recieve_loop(Acc, Timeout, 'got').
+
 recieve_loop(Acc, Timeout, WaitFor) ->
     receive   
         {WaitFor, Data} -> recieve_loop([Data|Acc],Timeout,WaitFor)
