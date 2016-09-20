@@ -51,7 +51,7 @@ setup_start(Parameters) ->
     Apps =
         case lists:keyfind('apps', 1, Parameters) of
             {'apps', App2Start} ->
-                lists:map(fun(App) -> application:ensure_all_started(App) end, App2Start),
+                _ = lists:map(fun(App) -> application:ensure_all_started(App) end, App2Start),
                 App2Start;
             false -> []
         end,
