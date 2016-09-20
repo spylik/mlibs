@@ -14,7 +14,7 @@ recieve_loop(Acc,Timeout) -> recieve_loop(Acc, Timeout, 'got').
 recieve_loop(Acc, Timeout, WaitFor) ->
     receive   
         {WaitFor, Data} -> recieve_loop([Data|Acc],Timeout,WaitFor)
-        after Timeout -> Acc
+        after Timeout -> lists:reverse(Acc)
     end.
 
 % spawn wait_msg_loop
