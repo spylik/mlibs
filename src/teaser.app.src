@@ -1,6 +1,6 @@
 {application, teaser, [
 	{description, "Some common-used scripts and erlang modules"},
-	{vsn, "0.0.12"},
+	{vsn, "0.0.13"},
 	{modules, []},
 	{registered, []},
 	{applications, [

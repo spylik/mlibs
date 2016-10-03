@@ -4,16 +4,41 @@
 
 -type id() :: {neg_integer(), pos_integer()}.
 
+-define(epoch, 62167219200).
+
 -export_type([
     id/0
     ]).
 
-% @doc Get current system time in milli_seconds
+% @doc Get current system time in milli_seconds (unix timestamp in milliseconds)
 -spec get_time() -> Result when
-    Result :: pos_integer().
+    Result      :: integer() | 'milli_seconds'.
 
 get_time() ->
-    erlang:convert_time_unit(erlang:system_time(), native, milli_seconds).
+    erlang:system_time(milli_seconds).
+
+% @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in millisecond)
+-spec http_time_to_unix_time_ms(DateTime) -> Result when
+    DateTime    :: nonempty_list() | binary(),
+    Result      :: integer() | 'milli_seconds'.
+
+http_time_to_unix_time_ms(DateTime) when is_binary(DateTime) ->
+    http_time_to_unix_time_ms(binary_to_list(DateTime));
+
+http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
+    erlang:convert_time_unit(
+        calendar:datetime_to_gregorian_seconds(httpd_util:convert_request_date(DateTime)) - ?epoch,
+        seconds, milli_seconds).
+
+% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
+-spec unixtimestamp_to_ms(DateTime) -> Result when
+    DateTime    :: integer() | binary() | 'seconds',
+    Result      :: integer() | 'milli_seconds'.
+
+unixtimestamp_to_ms(DateTime) when is_binary(DateTime) ->
+    unixtimestamp_to_ms(binary_to_integer(DateTime));
+unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
+    erlang:convert_time_unit(DateTime, seconds, milli_seconds).
 
 % @doc Generate unique id
 -spec gen_id() -> Result when
@@ -102,11 +127,11 @@ discover() ->
     end || Dir <- ["src/","test/"]].
 
 % @doc disable lager output to console
-dclog() ->
+dlog() ->
     lager:set_loglevel(lager_console_backend, critical).
 
 % @doc enable lager output to console
-eclog() ->
+elog() ->
     GetConfig = fun() -> 
         {ok, Data} = application:get_env(lager, handlers), 
         {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
@@ -114,8 +139,8 @@ eclog() ->
     end,
 
     try GetConfig() of 
-        Value -> eclog(Value)
+        Value -> elog(Value)
     catch _:_ ->
-        eclog(info)
+        elog(info)
     end.
-eclog(LogLevel) -> lager:set_loglevel(lager_console_backend, LogLevel).
+elog(LogLevel) -> lager:set_loglevel(lager_console_backend, LogLevel).

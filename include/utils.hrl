@@ -1,4 +1,5 @@
 % debug macros (development only, will not available once compiled in release mode)
+% todo: rid macros from the code with parse transform for release mode
 -ifndef(release).
     -define(here, error_logger:info_msg("(~p)~p: we are here", [?LINE,?MODULE]), true).
     -define(debug(Msg), error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]), true).
@@ -14,6 +15,11 @@
 % warning macros (will be available both in development and release mode)
 -define(warning(Msg,Arg),
         error_logger:warning_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
+    ).
+
+% error macros (will be available both in development and release mode)
+-define(error(Msg,Arg),
+        error_logger:error_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
 
 % got undefined message with standart format
