@@ -2,7 +2,13 @@
 % todo: rid macros from the code with parse transform for release mode
 -ifndef(release).
     -define(here, error_logger:info_msg("(~p)~p: we are here", [?LINE,?MODULE]), true).
-    -define(debug(Msg), error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]), true).
+    -define(debug(Msg), 
+        case is_binary(Msg) of
+            false ->
+                error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]);
+            true -> 
+                error_logger:info_msg("(~p)~p: ~p is ~s", [?LINE,?MODULE,??Msg,Msg])
+        end, true).
     -define(debug(Msg,Arg),
         error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg)), true
     ).
