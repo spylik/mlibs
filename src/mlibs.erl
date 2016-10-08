@@ -114,6 +114,9 @@ autotest_on_compile() ->
     end,
     sync:onsync(RunTests).
 
+etests() -> autotest_on_compile().
+dtests() -> sync:onsync(undefined).
+
 % @doc discover modules and tests
 discover() ->
     [case filelib:ensure_dir(Dir) of
@@ -127,11 +130,11 @@ discover() ->
     end || Dir <- ["src/","test/"]].
 
 % @doc disable lager output to console
-dlog() ->
+dclog() ->
     lager:set_loglevel(lager_console_backend, critical).
 
 % @doc enable lager output to console
-elog() ->
+eclog() ->
     GetConfig = fun() -> 
         {ok, Data} = application:get_env(lager, handlers), 
         {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
