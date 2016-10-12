@@ -23,6 +23,11 @@
         error_logger:warning_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
 
+% info macros (will be available both in development and release mode)
+-define(info(Msg,Arg),
+        error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
+    ).
+
 % error macros (will be available both in development and release mode)
 -define(error(Msg,Arg),
         error_logger:error_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
