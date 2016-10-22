@@ -2,6 +2,8 @@
 
 -compile(export_all).
 
+-include("utils.hrl").
+
 -type id() :: {neg_integer(), pos_integer()}.
 
 -define(epoch, 62167219200).
@@ -53,6 +55,13 @@ gen_id() ->
 
 random_atom() -> 
     list_to_atom(erlang:ref_to_list(make_ref())).
+
+% @doc wait_for
+wait_for(Msg) ->
+    wait_for(Msg, 1000).
+wait_for(Msg, Timeout) ->
+    ?info(Msg),
+    timer:sleep(Timeout).
 
 % @doc Generate password (by erlangcentral)
 -spec generate_password(Number) -> Password when

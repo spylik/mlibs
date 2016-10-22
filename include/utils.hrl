@@ -25,9 +25,8 @@
 
 % info macros (will be available both in development and release mode)
 -define(info(Msg),
-        error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]))
+        error_logger:info_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg])
     ).
-
 -define(info(Msg,Arg),
         error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
