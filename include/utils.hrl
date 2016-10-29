@@ -32,6 +32,9 @@
     ).
 
 % error macros (will be available both in development and release mode)
+-define(error(Msg),
+        error_logger:error_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg])
+    ).
 -define(error(Msg,Arg),
         error_logger:error_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
