@@ -5,7 +5,9 @@
 	{registered, []},
 	{applications, [
 		kernel,
-        stdlib,
+        stdlib
+    ]},
+    {included_applications, [
         inets
     ]},
 	{env, []}
