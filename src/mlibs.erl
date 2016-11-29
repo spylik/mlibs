@@ -4,17 +4,19 @@
 
 -include("utils.hrl").
 
--type id() :: {neg_integer(), pos_integer()}.
+-type id()      :: {neg_integer(), pos_integer()}.
+-type mtime()   :: pos_integer() | 'milli_seconds'.
 
 -define(epoch, 62167219200).
 
 -export_type([
-    id/0
+    id/0,
+    mtime/0
     ]).
 
 % @doc Get current system time in milli_seconds (unix timestamp in milliseconds)
 -spec get_time() -> Result when
-    Result      :: integer() | 'milli_seconds'.
+    Result      :: mtime().
 
 get_time() ->
     erlang:system_time(milli_seconds).
@@ -22,7 +24,7 @@ get_time() ->
 % @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec http_time_to_unix_time_ms(DateTime) -> Result when
     DateTime    :: nonempty_list() | binary(),
-    Result      :: integer() | 'milli_seconds'.
+    Result      :: mtime().
 
 http_time_to_unix_time_ms(DateTime) when is_binary(DateTime) ->
     http_time_to_unix_time_ms(binary_to_list(DateTime));
@@ -35,7 +37,7 @@ http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
 % @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec unixtimestamp_to_ms(DateTime) -> Result when
     DateTime    :: integer() | binary() | 'seconds',
-    Result      :: integer() | 'milli_seconds'.
+    Result      :: mtime().
 
 unixtimestamp_to_ms(DateTime) when is_binary(DateTime) ->
     unixtimestamp_to_ms(binary_to_integer(DateTime));
