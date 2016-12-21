@@ -46,10 +46,29 @@ unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
 
 % @doc Generate unique id
 -spec gen_id() -> Result when
-    Result :: id().
+    Result      :: id().
 
 gen_id() ->
     {erlang:monotonic_time(), erlang:unique_integer([monotonic,positive])}.
+
+% @doc Generate monotonic nonce
+-spec gen_nonce() -> Result when
+    Result      :: integer() | binary() | list().
+
+gen_nonce() ->
+    gen_nonce('integer').
+
+% @doc Generate monotonic nonce and produce input with defined type
+-spec gen_nonce(OutType) -> Result when
+    OutType     :: 'integer' | 'binary' | 'list',
+    Result      :: integer() | binary() | list().
+
+gen_nonce('integer') ->
+    list_to_integer(gen_nonce('list'));
+gen_nonce('binary') ->
+    list_to_binary(gen_nonce('list'));
+gen_nonce('list') ->
+    integer_to_list(mlibs:get_time())++integer_to_list(erlang:unique_integer([monotonic,positive])).
 
 % @doc Generate random atom
 -spec random_atom() -> Result when
