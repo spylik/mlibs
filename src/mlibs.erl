@@ -84,28 +84,30 @@ gen_nonce(Type,Since,NonceInInterval) ->
             lists:append([
                 Base,
                 "0",
-                TickSecDigit
-        ]);
+                NonceInInterval
+            ]);
         NonceInInterval < 100 when Type =:= 'list' ->
             lists:append([
                 Base,
-                TickSecDigit
-        ]);
-        NonceInInterval < 100 when Type =:= 'list' ->
-            integer_to_list(Base + TickSecDigit);
-        NonceInInterval < 10 when Type =:= 'integer' ->
-            lists:append([
+                NonceInInterval
+            ]);
+        NonceInInterval > 100 when Type =:= 'list' ->
+            integer_to_list(Base + NonceInInterval);
+
+
+        NonceInInterval < 11 when Type =:= 'integer' ->
+            list_to_integer(lists:append([
                 Base,
                 "0",
-                TickSecDigit
-        ]);
-        NonceInInterval < 100 when Type =:= 'list' ->
-            lists:append([
+                NonceInInterval
+            ]));
+        NonceInInterval < 100 when Type =:= 'integer' ->
+            list_to_integer(lists:append([
                 Base,
-                TickSecDigit
-        ]);
-        NonceInInterval < 100 when Type =:= 'list' ->
-            integer_to_list(Base + TickSecDigit);
+                NonceInInterval
+            ]));
+        NonceInInterval > 100 when Type =:= 'integer' ->
+            Base + NonceInInterval;
 
     end.
 
