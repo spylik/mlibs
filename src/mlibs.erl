@@ -8,6 +8,7 @@
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
 -define(epoch, 62167219200).
+-define(dec282016ms, 1482924639084).
 
 -export_type([
     id/0,
@@ -51,28 +52,67 @@ unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
 gen_id() ->
     {erlang:monotonic_time(), erlang:unique_integer([monotonic,positive])}.
 
-% @doc Generate monotonic nonce
--spec gen_nonce() -> Result when
-    Result      :: integer() | binary() | list().
+% @doc Generate 10 digit nonce (max is 4294967294 what actually is 11111111111111111111111111111110).
+% NonceInInterval should be monotimic unique in current second and flushes every 1 second to 1.
+% By default we going to start from 28 Dec 2016 (but of course - better every time from api creation date).
+-spec gen_nonce(NonceInInterval) -> Result when
+    NonceInInterval :: integer(), % last incremental number (we should update number to 0 every N-seconds)
+    Result          :: 1..4294967294 | binary() | list().
 
-gen_nonce() ->
-    gen_nonce('integer').
+gen_nonce(NonceInInterval) -> 
+    gen_nonce(?dec282016ms, NonceInInterval).
+
+-spec gen_nonce(Since,NonceInInterval) -> Result when
+    Since           :: mtime(),
+    NonceInInterval :: integer(), 
+    Result          :: 1..4294967294 | binary() | list().
+
+gen_nonce(Since,NonceInInterval) ->
+    gen_nonce('integer', Since, NonceInInterval).
 
 % @doc Generate monotonic nonce and produce input with defined type
--spec gen_nonce(OutType) -> Result when
-    OutType     :: 'integer' | 'binary' | 'list',
-    Result      :: integer() | binary() | list().
+-spec gen_nonce(OutType,Since,NonceInInterval) -> Result when
+    OutType         :: 'integer' | 'binary' | 'list',
+    Since           :: mtime(),
+    NonceInInterval :: integer(),
+    Result          :: integer() | binary() | list().
 
-gen_nonce('integer') ->
-    list_to_integer(gen_nonce('list'));
-gen_nonce('binary') ->
-    list_to_binary(gen_nonce('list'));
-gen_nonce('list') ->
-    integer_to_list(mlibs:get_time())++integer_to_list(erlang:unique_integer([monotonic,positive])).
+gen_nonce(Type,Since,NonceInInterval) ->
+    Base = erlang:system_time('seconds')-erlang:convert_time_unit(Since, 'milli_seconds', 'seconds'),
+    case 
+        NonceInInterval < 10 when Type =:= 'list' ->
+            lists:append([
+                Base,
+                "0",
+                TickSecDigit
+        ]);
+        NonceInInterval < 100 when Type =:= 'list' ->
+            lists:append([
+                Base,
+                TickSecDigit
+        ]);
+        NonceInInterval < 100 when Type =:= 'list' ->
+            integer_to_list(Base + TickSecDigit);
+        NonceInInterval < 10 when Type =:= 'integer' ->
+            lists:append([
+                Base,
+                "0",
+                TickSecDigit
+        ]);
+        NonceInInterval < 100 when Type =:= 'list' ->
+            lists:append([
+                Base,
+                TickSecDigit
+        ]);
+        NonceInInterval < 100 when Type =:= 'list' ->
+            integer_to_list(Base + TickSecDigit);
+
+    end.
+
 
 % @doc Generate random atom
 -spec random_atom() -> Result when
-    Result :: atom().
+    Result  :: atom().
 
 random_atom() -> 
     list_to_atom(erlang:ref_to_list(make_ref())).
