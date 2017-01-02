@@ -10,6 +10,7 @@
 -define(epoch, 62167219200).
 -define(dec282016ms, 1482924639084).
 
+
 -export_type([
     id/0,
     mtime/0
@@ -52,66 +53,6 @@ unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
 gen_id() ->
     {erlang:monotonic_time(), erlang:unique_integer([monotonic,positive])}.
 
-% @doc Generate 10 digit nonce (max is 4294967294 what actually is 11111111111111111111111111111110).
-% NonceInInterval should be monotimic unique in current second and flushes every 1 second to 1.
-% By default we going to start from 28 Dec 2016 (but of course - better every time from api creation date).
--spec gen_nonce(NonceInInterval) -> Result when
-    NonceInInterval :: integer(), % last incremental number (we should update number to 0 every N-seconds)
-    Result          :: 1..4294967294 | binary() | list().
-
-gen_nonce(NonceInInterval) -> 
-    gen_nonce(?dec282016ms, NonceInInterval).
-
--spec gen_nonce(Since,NonceInInterval) -> Result when
-    Since           :: mtime(),
-    NonceInInterval :: integer(), 
-    Result          :: 1..4294967294 | binary() | list().
-
-gen_nonce(Since,NonceInInterval) ->
-    gen_nonce('integer', Since, NonceInInterval).
-
-% @doc Generate monotonic nonce and produce input with defined type
--spec gen_nonce(OutType,Since,NonceInInterval) -> Result when
-    OutType         :: 'integer' | 'binary' | 'list',
-    Since           :: mtime(),
-    NonceInInterval :: integer(),
-    Result          :: integer() | binary() | list().
-
-gen_nonce(Type,Since,NonceInInterval) ->
-    Base = erlang:system_time('seconds')-erlang:convert_time_unit(Since, 'milli_seconds', 'seconds'),
-    case 
-        NonceInInterval < 10 when Type =:= 'list' ->
-            lists:append([
-                Base,
-                "0",
-                NonceInInterval
-            ]);
-        NonceInInterval < 100 when Type =:= 'list' ->
-            lists:append([
-                Base,
-                NonceInInterval
-            ]);
-        NonceInInterval > 100 when Type =:= 'list' ->
-            integer_to_list(Base + NonceInInterval);
-
-
-        NonceInInterval < 11 when Type =:= 'integer' ->
-            list_to_integer(lists:append([
-                Base,
-                "0",
-                NonceInInterval
-            ]));
-        NonceInInterval < 100 when Type =:= 'integer' ->
-            list_to_integer(lists:append([
-                Base,
-                NonceInInterval
-            ]));
-        NonceInInterval > 100 when Type =:= 'integer' ->
-            Base + NonceInInterval;
-
-    end.
-
-
 % @doc Generate random atom
 -spec random_atom() -> Result when
     Result  :: atom().
@@ -128,8 +69,8 @@ wait_for(Msg, Timeout) ->
 
 % @doc Generate password (by erlangcentral)
 -spec generate_password(Number) -> Password when
-    Number :: pos_integer(),
-    Password :: list().
+    Number      :: pos_integer(),
+    Password    :: list().
 
 generate_password(Number) ->
     lists:map(fun (_) -> rand:uniform(90)+$\s+1 end, lists:seq(1,Number)).
