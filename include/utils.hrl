@@ -19,6 +19,9 @@
 -endif.
 
 % warning macros (will be available both in development and release mode)
+-define(warning(Msg),
+        error_logger:warning_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg])
+    ).
 -define(warning(Msg,Arg),
         error_logger:warning_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
