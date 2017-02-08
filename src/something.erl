@@ -24,8 +24,8 @@
 %======== convert any numbers to float with precision  =========
 % @doc convert convertable integers, binaries, lists to floats.
 % it works with precision 8. 
-% For support precision we added some overhead for floats to floats :
-% We converting float to lists with ?PRECISION option and then back to floats.
+% For support precision we added some overhead : we converting float to lists 
+% with ?PRECISION option and then back to floats.
 -spec to_float(Number) -> Result 
     when
         Number :: float() | integer() | nonempty_list() | binary(),
@@ -35,10 +35,116 @@ to_float(Number) when is_float(Number) -> to_float(float_to_list(Number, ?PRECIS
 to_float(Number) when is_integer(Number) -> float(Number);
 to_float(Number) when is_list(Number) ->
     case lists:member($.,Number) of
-        true -> list_to_float(float_to_list(list_to_float(Number), ?PRECISION));
-        false -> to_float(list_to_integer(Number))
+        true -> 
+            list_to_float(
+                float_to_list(
+                    try list_to_float(Number) 
+                    catch
+                        _:_ -> list_to_float(before_sign(Number))
+                    end, 
+                    ?PRECISION
+                )
+            );
+        false -> 
+            try list_to_integer(Number) of
+                Num -> to_float(Num)
+            catch
+                _:_ -> 
+                    list_to_float(
+                        float_to_list(
+                            list_to_float(before_sign(Number)),
+                            ?PRECISION
+                        )
+                    )
+            end
+                
+
     end;
 to_float(Number) when is_binary(Number) -> to_float(binary_to_list(Number)).
+
+% Following piece of code proposed by Richard A. O'Keefe in erlang-questions mailing 
+% list to deal with C, Ada, Smalltalk and some Fortran format of float numbers.
+% The general problem is that Erlang more pedantic about compact floats representation 
+% and can convert only "1.0e-8" format but cannot convert things like "1e-8".
+%
+% Link to the thread: http://erlang.org/pipermail/erlang-questions/2017-February/091614.html
+before_sign("+" ++ Chars) ->
+    after_sign(Chars);
+before_sign("-" ++ Chars) ->
+    "-" ++ after_sign(Chars);
+before_sign(Chars) ->
+    after_sign(Chars).
+
+after_sign([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char|after_digit(Chars)];
+after_sign("." ++ Chars) ->
+    "0." ++ after_dot(Chars).
+
+after_digit([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char|after_digit(Chars)];
+after_digit("_" ++ Chars) ->
+    after_digit(Chars);
+after_digit("." ++ Chars) ->
+    "." ++ after_dot(Chars);
+after_digit(Chars) ->
+    ".0" ++ after_fraction(Chars).
+
+after_dot([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char|after_fraction(Chars)];
+after_dot(Chars) ->
+    "0" ++ after_fraction(Chars).
+
+after_fraction([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char | after_fraction(Chars)];
+after_fraction("_" ++ Chars) ->
+    after_fraction(Chars);
+after_fraction([Char|Chars]) when
+        Char =:= $e; 
+        Char =:= $d; 
+        Char =:= $q; 
+        Char =:= $E; 
+        Char =:= $D; 
+        Char =:= $Q -> 
+    "e" ++ after_e(Chars);
+
+after_fraction(Chars) ->
+    "e0" ++ after_e_digits(Chars).
+
+after_e("+" ++ Chars) ->
+    after_e_sign(Chars);
+after_e("-" ++ Chars) ->
+    "-" ++ after_e_sign(Chars);
+after_e(Chars) ->
+    after_e_sign(Chars).
+
+after_e_sign([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char|after_e_digits(Chars)].
+
+after_e_digits([Char|Chars]) when 
+        Char >= $0, 
+        Char =< $9 ->
+    [Char|after_e_digits(Chars)];
+after_e_digits("_" ++ Chars) ->
+    after_e_digits(Chars);
+after_e_digits([Char]) when 
+        Char =:= $f ; 
+        Char =:= $l ; 
+        Char =:= $F ; 
+        Char =:= $L -> 
+    "";
+after_e_digits([]) ->
+    "".
+%------- end of Richard A. O'Keefe proposal for floats -------
 
 % @doc convert convertable positive integers, binaries, lists to positive floats.
 % if can't convert due negative value it throw error cant_convert_to_positive_float
