@@ -18,6 +18,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'othree/html5.vim'
+Plugin 'elixir-lang/vim-elixir'
 call vundle#end()
 filetype plugin indent on
 " ------------------
