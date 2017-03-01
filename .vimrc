@@ -29,6 +29,8 @@ autocmd FileType text setlocal textwidth=78
 autocmd FileType erlang setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType nix setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType asciidoc setlocal expandtab tabstop=4 shiftwidth=4
+autocmd BufWritePre *.ex %s/\s\+$//e
+autocmd BufWritePre *.exs %s/\s\+$//e
 autocmd BufReadPost *
   \ if line("'\"") > 0 && line("'\"") <= line("$") |
   \   exe "normal g`\"" |
