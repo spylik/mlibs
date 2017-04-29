@@ -123,7 +123,7 @@ autotest_on_compile() ->
         _ = [Mod:test() || Mod <- Mods, 
             erlang:function_exported(Mod, test, 0)
         ],
-        [eunit:test(Mod) || Mod <- Mods]
+        [eunit:test(Mod, [verbose, {report,{eunit_surefire,[{dir,"./log"}]}}]) || Mod <- Mods]
     end,
     sync:onsync(RunTests).
 
