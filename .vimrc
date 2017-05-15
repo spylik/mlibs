@@ -19,6 +19,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'othree/html5.vim'
 Plugin 'elixir-lang/vim-elixir'
+Plugin 'ctrlpvim/ctrlp.vim'
 call vundle#end()
 filetype plugin indent on
 " ------------------
@@ -29,6 +30,7 @@ autocmd FileType text setlocal textwidth=78
 autocmd FileType erlang setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType nix setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType asciidoc setlocal expandtab tabstop=4 shiftwidth=4
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd BufWritePre *.ex %s/\s\+$//e
 autocmd BufWritePre *.exs %s/\s\+$//e
 autocmd BufReadPost *
