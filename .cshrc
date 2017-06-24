@@ -13,8 +13,10 @@ alias ll	ls -lA
 alias bc bc -l
 alias ls	ls -G
 alias portupdate /opt/local/bin/port -v selfupdate
+alias nixbuild "nix-build -E 'with import <nixpkgs> { }; callPackage ./package.nix { }'"
 alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
 alias pta 'escript ~spyl/projects/parse_trans/ebin/parse_trans_pp.beam'
+alias weather 'curl wttr.in'
 
 alias precmd "source ~/bin/gitprompt.csh"
 
@@ -22,11 +24,11 @@ setenv GIT_BRANCH_CMD "sh -c 'git branch --no-color 2> /dev/null' | sed -e '/^[^
 # A righteous umask
 umask 22
 
-set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /usr/X11R6/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin /opt/local/lib/percona/bin)
+set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /usr/X11R6/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin /opt/local/lib/percona/bin $HOME/Library/Python/3.4/bin)
 
 setenv VLC_PLUGIN_PATH /opt/local/lib/vlc/plugins/
 
-#setenv 	JAVA_HOME	/usr/
+setenv 	JAVA_HOME 	`/usr/libexec/java_home -v 1.8`
 
 set color
 setenv	EDITOR	vim
