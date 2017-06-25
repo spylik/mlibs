@@ -28,6 +28,7 @@ filetype plugin indent on
 
 autocmd FileType text setlocal textwidth=78
 autocmd FileType erlang setlocal expandtab tabstop=4 shiftwidth=4
+autocmd FileType java setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType nix setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType asciidoc setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab

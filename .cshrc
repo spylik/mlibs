@@ -28,7 +28,8 @@ set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/
 
 setenv VLC_PLUGIN_PATH /opt/local/lib/vlc/plugins/
 
-setenv 	JAVA_HOME 	`/usr/libexec/java_home -v 1.8`
+setenv JAVA_HOME 	`/usr/libexec/java_home -v 1.8`
+setenv ERL_AFLAGS "-kernel shell_history enabled"
 
 set color
 setenv	EDITOR	vim
