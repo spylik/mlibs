@@ -2,11 +2,14 @@
 % todo: rid macros from the code with parse transform for release mode
 -ifndef(release).
     -define(here, error_logger:info_msg("(~p)~p: we are here", [?LINE,?MODULE]), true).
-    -define(debug(Msg), 
+    -define(dump2file(Data, Filename),
+        file:write_file(Filename, io_lib:fwrite("~s~n",[Data]))
+    ).
+    -define(debug(Msg),
         case is_binary(Msg) of
             false ->
                 error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]);
-            true -> 
+            true ->
                 error_logger:info_msg("(~p)~p: ~p is ~s", [?LINE,?MODULE,??Msg,Msg])
         end, true).
     -define(debug(Msg,Arg),
@@ -14,6 +17,7 @@
     ).
 -else.
     -define(here, true).
+    -define(dump2file(Data, Filename), true).
     -define(debug(Msg), true).
     -define(debug(Msg,Arg), true).
 -endif.
@@ -45,7 +49,7 @@
 % got undefined message with standart format
 -define(undefined(Arg),
         {current_function, {M, F, A}} = process_info(self(), current_function),
-        RegisteredName = case process_info(self(), registered_name) of 
+        RegisteredName = case process_info(self(), registered_name) of
             [] -> unregistered;
             {registered_name, Name} -> Name
         end,
@@ -54,7 +58,7 @@
 % got undefined message with custom format
 -define(undefined(Msg,Arg),
         {current_function, {M, F, A}} = process_info(self(), current_function),
-        RegisteredName = case process_info(self(), registered_name) of 
+        RegisteredName = case process_info(self(), registered_name) of
             [] -> unregistered;
             {registered_name, Name} -> Name
         end,
