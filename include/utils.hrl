@@ -2,7 +2,7 @@
 % todo: rid macros from the code with parse transform for release mode
 -ifndef(release).
     -define(here, error_logger:info_msg("(~p)~p: we are here", [?LINE,?MODULE]), true).
-    -define(dump2file(Data, Filename),
+    -define(dump_to_file(Data, Filename),
         file:write_file(Filename, io_lib:fwrite("~s~n",[Data]))
     ).
     -define(debug(Msg),
@@ -17,7 +17,7 @@
     ).
 -else.
     -define(here, true).
-    -define(dump2file(Data, Filename), true).
+    -define(dump_to_file(Data, Filename), true).
     -define(debug(Msg), true).
     -define(debug(Msg,Arg), true).
 -endif.
