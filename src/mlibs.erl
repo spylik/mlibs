@@ -56,7 +56,12 @@ datetime_to_ms(<<
     Sec:2/binary
     >>
 ) -> erlang:convert_time_unit(
-        calendar:datetime_to_gregorian_seconds({{binary_to_integer(Y),binary_to_integer(M),binary_to_integer(D)},{binary_to_integer(Hrs),binary_to_integer(Min),binary_to_integer(Sec)}}),
+        calendar:datetime_to_gregorian_seconds(
+            {
+                {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
+                {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
+            }
+        ),
         seconds, milli_seconds
     ).
 
