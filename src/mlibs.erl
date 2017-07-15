@@ -34,7 +34,31 @@ http_time_to_unix_time_ms(DateTime) when is_binary(DateTime) ->
 http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
     erlang:convert_time_unit(
         calendar:datetime_to_gregorian_seconds(httpd_util:convert_request_date(DateTime)) - ?epoch,
-        seconds, milli_seconds).
+        seconds, milli_seconds
+    ).
+
+% @doc Time <<"2017-07-13 14:45:47">> to ms 63667176347000
+-spec datetime_to_ms(DateTime) -> Result when
+    DateTime    :: list() | binary(),
+    Result      :: mtime().
+
+datetime_to_ms(<<
+    Y:4/binary,
+    $-,
+    M:2/binary,
+    $-,
+    D:2/binary,
+    " ",
+    Hrs:2/binary,
+    $:,
+    Min:2/binary,
+    $:,
+    Sec:2/binary
+    >>
+) -> erlang:convert_time_unit(
+        calendar:datetime_to_gregorian_seconds({{binary_to_integer(Y),binary_to_integer(M),binary_to_integer(D)},{binary_to_integer(Hrs),binary_to_integer(Min),binary_to_integer(Sec)}}),
+        seconds, milli_seconds
+    ).
 
 % @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec unixtimestamp_to_ms(DateTime) -> Result when
@@ -57,7 +81,7 @@ gen_id() ->
 -spec random_atom() -> Result when
     Result  :: atom().
 
-random_atom() -> 
+random_atom() ->
     list_to_atom(erlang:ref_to_list(make_ref())).
 
 % @doc wait_for
@@ -120,7 +144,7 @@ trim_sup(Name) ->
 autotest_on_compile() ->
     ok = sync:start(),
     RunTests = fun(Mods) ->
-        _ = [Mod:test() || Mod <- Mods, 
+        _ = [Mod:test() || Mod <- Mods,
             erlang:function_exported(Mod, test, 0)
         ],
         [eunit:test(Mod, [verbose, {report,{eunit_surefire,[{dir,"./log"}]}}]) || Mod <- Mods]
@@ -148,13 +172,13 @@ dclog() ->
 
 % @doc enable lager output to console
 eclog() ->
-    GetConfig = fun() -> 
-        {ok, Data} = application:get_env(lager, handlers), 
+    GetConfig = fun() ->
+        {ok, Data} = application:get_env(lager, handlers),
         {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
         Value
     end,
 
-    try GetConfig() of 
+    try GetConfig() of
         Value -> elog(Value)
     catch _:_ ->
         elog(info)
