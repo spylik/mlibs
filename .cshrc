@@ -23,7 +23,7 @@ setenv GIT_BRANCH_CMD "sh -c 'git branch --no-color 2> /dev/null' | sed -e '/^[^
 # A righteous umask
 umask 22
 
-set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin)
+set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin $HOME/.rbenv/bin $HOME/.rbenv/plugins/ruby-build/bin)
 
 setenv ERL_AFLAGS "-kernel shell_history enabled"
 
@@ -73,4 +73,10 @@ endif
 # using keix
 if ( -r $HOME/.kiex/scripts/kiex.csh ) then
 	source $HOME/.kiex/scripts/kiex.csh
+endif
+
+# ruby stuff
+# http://solutions.davesource.com/20160301.Ruby-rbenv-tcsh-csh-Complete-Solution/
+if (-r $HOME/bin/rbenvWrap) then 
+	eval `rbenvWrap init -`
 endif

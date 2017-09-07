@@ -1,0 +1,14 @@
+[Unit]
+Description=DevDocs ruby server
+After=networking
+
+[Service]
+Type=simple
+User=spyl
+Group=spyl
+ExecStart=/home/spyl/projects/devdocs/devdocs.csh
+Restart=always
+TimeoutSec=10
+
+[Install]
+WantedBy=multi-user.target
