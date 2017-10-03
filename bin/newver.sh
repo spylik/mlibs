@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
-# sh-driven cross-vcs hook for automatically update version for Erlang and Elixir projects.
-#
-# It uses the following strategy:
-# - patch part of version updates during each commit.
-# - minor part of version updates during each merge.
-# - major part updates manually only. for update run path_to_newver/newver.sh -M
+# bash-driven cross-vcs hook for automatically update version for Erlang and Elixir projects.
 #
 # Currently support git and mercurial as source version control system
+#
+# Usage: 
+# path_to_newver/newver.sh -p  (will update 12.3.3 to 12.3.4)
+# path_to_newver/newver.sh -m  (will update 12.3.4 to 12.4.1)
+# path_to_newver/newver.sh -m  (will update 12.4.1 to 13.0.1)
 
 while getopts ":Mmp" Option
 do
