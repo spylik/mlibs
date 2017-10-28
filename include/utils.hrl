@@ -32,7 +32,12 @@
 
 % info macros (will be available both in development and release mode)
 -define(info(Msg),
-        error_logger:info_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg])
+        case is_list(Msg) of
+            false ->
+                error_logger:info_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg]);
+            true ->
+                error_logger:info_msg("(~p)~p: ~s", [?LINE,?MODULE,Msg])
+        end
     ).
 -define(info(Msg,Arg),
         error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
@@ -40,8 +45,14 @@
 
 % error macros (will be available both in development and release mode)
 -define(error(Msg),
-        error_logger:error_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg])
+        case is_list(Msg) of
+            false ->
+                error_logger:error_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg]);
+            true ->
+                error_logger:error_msg("(~p)~p: ~s", [?LINE,?MODULE,Msg])
+        end
     ).
+
 -define(error(Msg,Arg),
         error_logger:error_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg))
     ).
