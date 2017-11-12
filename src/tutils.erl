@@ -4,9 +4,15 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+% batch receive loop in separate process (awaiting message in topic)
+% it is always need after recieve_loop()
+batch_loop(Topic) when is_binary(Topic) ->
+    erlroute:sub([{topic, Topic}], spawn_wait_loop(self())).
+
 % recieve loop
 recieve_loop() -> recieve_loop([], 15, 'got').
-recieve_loop(Acc) ->
+
+recieve_loop(Acc) when is_list(Acc) ->
     recieve_loop(Acc, 15, 'got').
 
 recieve_loop(Acc,Timeout) -> recieve_loop(Acc, Timeout, 'got').
