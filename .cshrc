@@ -79,3 +79,8 @@ endif
 if (-r $HOME/bin/rbenvWrap) then 
 	eval `rbenvWrap init -`
 endif
+
+# https://direnv.net/
+if (`where direnv` != "") then
+	eval `direnv hook tcsh`
+endif
