@@ -19,7 +19,6 @@ alias weather 'curl wttr.in'
 
 alias precmd "source ~/bin/gitprompt.csh"
 
-setenv GIT_BRANCH_CMD "sh -c 'git branch --no-color 2> /dev/null' | sed -e '/^[^*]/d' -e 's/* \(.*\)/:\1/'"
 # A righteous umask
 umask 22
 
