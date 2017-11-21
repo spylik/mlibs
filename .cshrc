@@ -17,7 +17,7 @@ alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
 alias pta 'escript ~spyl/projects/parse_trans/ebin/parse_trans_pp.beam'
 alias weather 'curl wttr.in'
 
-alias precmd "source ~/bin/gitprompt.csh"
+alias precmd "source ~/bin/precmd.csh"
 
 # A righteous umask
 umask 22
@@ -80,7 +80,12 @@ if (-r $HOME/bin/rbenvWrap) then
 	eval `rbenvWrap init -`
 endif
 
-# https://direnv.net/
 if (`where direnv` != "") then
-	eval `direnv hook tcsh`
-endif
+	#	alias precmd 'eval `direnv export tcsh`'
+	#precmd "echo $prompt"
+	#	eval `direnv hook tcsh -`
+endif                                                                                                                   
+
+
+# https://direnv.net/                                                                                                   
+
