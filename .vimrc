@@ -60,7 +60,7 @@ set titlestring=%<%F%=%l/%L-%P
 " End of settings for title
 " ------------------
 
-set autoindent
+"set autoindent
 set smartindent
 set smarttab
 

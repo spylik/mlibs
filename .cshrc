@@ -79,13 +79,3 @@ endif
 if (-r $HOME/bin/rbenvWrap) then 
 	eval `rbenvWrap init -`
 endif
-
-if (`where direnv` != "") then
-	#	alias precmd 'eval `direnv export tcsh`'
-	#precmd "echo $prompt"
-	#	eval `direnv hook tcsh -`
-endif                                                                                                                   
-
-
-# https://direnv.net/                                                                                                   
-
