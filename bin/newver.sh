@@ -29,10 +29,10 @@ nv() {
 # Determine which version control system we using for this project
 add_to_repo(){
 	if [ -d ".git" ]; then
-		git add $file
+		git add $1
 	fi
 	if [ -d ".hg" ]; then
-		hg commit --amend $file
+		hg commit --amend $1
 	fi
 }
 
@@ -55,7 +55,13 @@ else
 			sed -i.bak s/$old/$new/g $file
 			rm $file.bak
 			add_to_repo $file
-			if [ -e "relx.config" ]; then echo "Patch file relx.config. New vsn: $new"; sed -i.bak s/$old/$new/g relx.config;rm relx.config.bak;add_to_repo relx.config;fi
+			if [ -e "relx.config" ]; then 
+                echo "Patch file relx.config. New vsn: $new" 
+                sed -i.bak s/$old/$new/g relx.config
+                rm relx.config.bak
+                echo "here we are"
+                add_to_repo relx.config
+            fi
 		done;
 	fi
 fi
