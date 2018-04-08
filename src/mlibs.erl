@@ -125,12 +125,17 @@ build_key_lists([H|T],[], Delm, Type) when is_list(H) ->
     build_key_lists(T, H, Delm, Type);
 build_key_lists([H|T],[], Delm, Type) when is_binary(H) ->
     build_key_lists(T, binary_to_list(H), Delm, Type);
+build_key_lists([H|T],[], Delm, Type) when is_tuple(H) ->
+    build_key_lists(T, io_lib:write(H), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_atom(H) ->
     build_key_lists(T, lists:concat([Acc, Delm, atom_to_list(H)]), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_list(H) ->
     build_key_lists(T, lists:concat([Acc, Delm, H]), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_binary(H) ->
     build_key_lists(T, lists:concat([Acc, Delm, binary_to_list(H)]), Delm, Type);
+build_key_lists([H|T],Acc, Delm, Type) when is_tuple(H) ->
+    build_key_lists(T, lists:concat([Acc, Delm, io_lib:write(H)]), Delm, Type);
+
 % output
 build_key_lists([], Acc, _Delm, atomic) ->
     list_to_atom(Acc);
