@@ -20,7 +20,7 @@
 
 % warning macros (will be available both in development and release mode)
 -define(warning(Msg),
-        error_logger:warning_msg("(~p)~p: ~p", [?LINE,?MODULE,Msg]), true
+        error_logger:warning_msg("(~p)~p: ~s", [?LINE,?MODULE,Msg]), true
     ).
 -define(warning(Msg,Arg),
         error_logger:warning_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg)), true
@@ -38,7 +38,6 @@
 -define(error(Msg),
         error_logger:error_msg("(~p)~p: ~s", [?LINE,?MODULE,Msg]), true
     ).
-
 -define(error(Msg,Arg),
         error_logger:error_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg)), true
     ).

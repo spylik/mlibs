@@ -7,7 +7,9 @@
 % batch receive loop in separate process (awaiting message in topic)
 % it is always need after recieve_loop()
 batch_loop(Topic) when is_binary(Topic) ->
-    erlroute:sub([{topic, Topic}], spawn_wait_loop(self())).
+    WorkerPid = spawn_wait_loop(self()),
+    erlroute:sub([{topic, Topic}], WorkerPid),
+    WorkerPid.
 
 % recieve loop
 recieve_loop() -> recieve_loop([], 15, 'got').
@@ -15,7 +17,7 @@ recieve_loop() -> recieve_loop([], 15, 'got').
 recieve_loop(Acc) when is_list(Acc) ->
     recieve_loop(Acc, 15, 'got').
 
-recieve_loop(Acc,Timeout) -> recieve_loop(Acc, Timeout, 'got').
+recieve_loop(Acc, Timeout) -> recieve_loop(Acc, Timeout, 'got').
 
 recieve_loop(Acc, Timeout, WaitFor) ->
     receive
@@ -24,7 +26,7 @@ recieve_loop(Acc, Timeout, WaitFor) ->
     end.
 
 % spawn wait_msg_loop
-spawn_wait_loop(SendToPid) -> spawn_link(?MODULE, wait_msg_loop, [SendToPid]).
+spawn_wait_loop(SendToPid) -> spawn(?MODULE, wait_msg_loop, [SendToPid]).
 
 % waiting loop
 wait_msg_loop(SendToPid) -> wait_msg_loop(SendToPid,'got').
@@ -38,7 +40,7 @@ wait_msg_loop(SendToPid, WaitFor) ->
 
 % spawn wait_msg_loop
 spawn_wait_loop_max(Max) -> spawn_wait_loop_max(Max, 15).
-spawn_wait_loop_max(Max,Timeout) -> spawn_link(?MODULE, wait_msg_loop_max, [[], Timeout, Max, 0, self()]).
+spawn_wait_loop_max(Max,Timeout) -> spawn(?MODULE, wait_msg_loop_max, [[], Timeout, Max, 0, self()]).
 
 % receive loop with maximum messages
 wait_msg_loop_max(Acc, Timeout, Max, Current, ReportTo) when Max > Current ->
