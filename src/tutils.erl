@@ -3,6 +3,7 @@
 -compile(export_all).
 
 -include_lib("eunit/include/eunit.hrl").
+-include("utils.hrl").
 
 -spec batch_receiver_and_loop(Topic) -> PidOfKeeper when
     Topic           :: erlroute:topic(),
@@ -15,11 +16,14 @@ batch_receiver_and_loop(Topic) ->
 
 -spec read_from_receiver(KeeperPid) -> Result when
     KeeperPid       :: pid(),
-    Result          :: [] | [term()].
+    Result          :: [] | [term()] | timeout_in_receiver.
 
 read_from_receiver(KeeperPid) ->
     KeeperPid ! {'read_and_die', self()},
-    recieve_loop().
+    receive
+        Data -> Data
+        after 15 -> timeout_in_receiver
+    end.
 
 % batch receive loop in separate process (awaiting message in topic)
 batch_loop(Topic) ->
@@ -54,7 +58,7 @@ wait_msg_loop(SendToPidOrKeep, WaitFor, Acc) ->
         Msg when is_pid(SendToPidOrKeep) ->
             SendToPidOrKeep ! {WaitFor, Msg},
             wait_msg_loop(SendToPidOrKeep, WaitFor, Acc);
-        Msg when SendToPidOrKeep =:= 'keep' ->
+        {WaitFor, Msg} when SendToPidOrKeep =:= 'keep' ->
             wait_msg_loop(SendToPidOrKeep, WaitFor, [Msg | Acc])
     end.
 
