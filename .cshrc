@@ -14,6 +14,7 @@ alias bc bc -l
 alias ls	ls -G
 alias nixbuild "nix-build -E 'with import <nixpkgs> { }; callPackage ./package.nix { }'"
 alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
+alias staging 'ssh admin@zebra-staging.entelios.zz -i ~/projects/Zebra/scripts/playbooks/ssh/zebra-staging.pem'
 alias pta 'escript ~spyl/projects/parse_trans/ebin/parse_trans_pp.beam'
 alias weather 'curl wttr.in'
 
@@ -22,7 +23,7 @@ alias precmd "source ~/bin/precmd.csh"
 # A righteous umask
 umask 22
 
-set path = (/sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin $HOME/.rbenv/bin $HOME/.rbenv/plugins/ruby-build/bin)
+set path = (/usr/local/opt/make/libexec/gnubin /sbin /bin /usr/sbin /usr/bin /usr/games /usr/local/sbin /usr/local/bin /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin $HOME/.rbenv/bin $HOME/.rbenv/plugins/ruby-build/bin /usr/lib/chromium-browser/chromedriver)
 
 setenv ERL_AFLAGS "-kernel shell_history enabled"
 
