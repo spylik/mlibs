@@ -4,10 +4,29 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-spec batch_receiver_and_loop(Topic) -> PidOfKeeper when
+    Topic           :: erlroute:topic(),
+    PidOfKeeper     :: pid().
+
+batch_receiver_and_loop(Topic) ->
+    Keeper = spawn_wait_loop('keep'),
+    batch_loop(Topic, Keeper),
+    Keeper.
+
+-spec read_from_receiver(KeeperPid) -> Result when
+    KeeperPid       :: pid(),
+    Result          :: [] | [term()].
+
+read_from_receiver(KeeperPid) ->
+    KeeperPid ! {'read_and_die', self()},
+    recieve_loop().
+
 % batch receive loop in separate process (awaiting message in topic)
-% it is always need after recieve_loop()
-batch_loop(Topic) when is_binary(Topic) ->
-    erlroute:sub([{topic, Topic}], spawn_wait_loop(self())).
+% it is always need after to do: recieve_loop()
+batch_loop(Topic) ->
+    batch_loop(Topic, self()).
+batch_loop(Topic, Pid) ->
+    erlroute:sub([{topic, Topic}], spawn_wait_loop(Pid)).
 
 % recieve loop
 recieve_loop() -> recieve_loop([], 15, 'got').
@@ -27,13 +46,16 @@ recieve_loop(Acc, Timeout, WaitFor) ->
 spawn_wait_loop(SendToPid) -> spawn_link(?MODULE, wait_msg_loop, [SendToPid]).
 
 % waiting loop
-wait_msg_loop(SendToPid) -> wait_msg_loop(SendToPid,'got').
-wait_msg_loop(SendToPid, WaitFor) ->
+wait_msg_loop(SendToPidOrKeep) -> wait_msg_loop(SendToPidOrKeep, 'got', []).
+wait_msg_loop(SendToPidOrKeep, WaitFor, Acc) ->
     receive
         stop -> true;
-        Msg ->
-            SendToPid ! {WaitFor, Msg},
-            wait_msg_loop(SendToPid, WaitFor)
+        {'read_and_die', Pid} -> Pid ! Acc, true;
+        Msg when is_pid(SendToPidOrKeep) ->
+            SendToPidOrKeep ! {WaitFor, Msg},
+            wait_msg_loop(SendToPidOrKeep, WaitFor, Acc);
+        Msg when SendToPidOrKeep =:= 'keep' ->
+            wait_msg_loop(SendToPidOrKeep, WaitFor, [Msg | Acc])
     end.
 
 % spawn wait_msg_loop
