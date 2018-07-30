@@ -15,7 +15,7 @@ alias ls	ls -G
 alias nixbuild "nix-build -E 'with import <nixpkgs> { }; callPackage ./package.nix { }'"
 alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
 alias staging 'ssh admin@zebra-staging.entelios.zz -i ~/projects/Zebra/scripts/playbooks/ssh/zebra-staging.pem'
-alias pta 'escript ~spyl/projects/parse_trans/ebin/parse_trans_pp.beam'
+alias pta 'escript ~/projects/parse_trans/ebin/parse_trans_pp.beam'
 alias weather 'curl wttr.in'
 
 alias precmd "source ~/bin/precmd.csh"
@@ -38,7 +38,7 @@ setenv	CLICOLOR	YES
 
 setenv LC_ALL en_US.UTF-8  
 setenv LANG en_US.UTF-8
-#setenv AWS_CONFIG_FILE ~spyl/.awsconfig
+#setenv AWS_CONFIG_FILE ~/.awsconfig
 
 set MainC  = '^[[=2F^[[=0G'
 set blackC = '^[[0m^[[30m'
@@ -63,11 +63,6 @@ if ($?prompt) then
 		bindkey -k up history-search-backward
 		bindkey -k down history-search-forward
 	endif
-endif
-
-# using kerl
-if ( -r $HOME/kerl/20.0/activate.csh ) then
-    source $HOME/kerl/20.0/activate.csh
 endif
 
 # using keix
