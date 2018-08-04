@@ -27,10 +27,12 @@ read_from_receiver(KeeperPid) ->
 
 % batch receive loop in separate process (awaiting message in topic)
 batch_loop(Topic) ->
-    batch_loop(Topic, self()).
-batch_loop(Topic, WorkerPid) ->
-    erlroute:sub([{topic, Topic}], spawn_wait_loop(WorkerPid)),
+    WorkerPid = spawn_wait_loop(self()),
+    erlroute:sub([{topic, Topic}], WorkerPid),
     WorkerPid.
+batch_loop(Topic, ReceiverPid) ->
+    erlroute:sub([{topic, Topic}], spawn_wait_loop(ReceiverPid)),
+    ReceiverPid.
 
 % recieve loop
 recieve_loop() -> recieve_loop([], 15, 'got').
@@ -56,8 +58,12 @@ wait_msg_loop(SendToPidOrKeep, WaitFor, Acc) ->
         stop -> true;
         {'read_and_die', Pid} -> Pid ! Acc, true;
         Msg when is_pid(SendToPidOrKeep) ->
-            SendToPidOrKeep ! {WaitFor, Msg},
-            wait_msg_loop(SendToPidOrKeep, WaitFor, Acc);
+            case process_info(SendToPidOrKeep) of
+                undefined -> true;
+                _ ->
+                    SendToPidOrKeep ! {WaitFor, Msg},
+                    wait_msg_loop(SendToPidOrKeep, WaitFor, Acc)
+            end;
         {WaitFor, Msg} when SendToPidOrKeep =:= 'keep' ->
             wait_msg_loop(SendToPidOrKeep, WaitFor, [Msg | Acc])
     end.
