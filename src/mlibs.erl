@@ -1,6 +1,7 @@
 -module(mlibs).
 
 -compile(export_all).
+-compile(nowarn_export_all).
 
 -include("utils.hrl").
 

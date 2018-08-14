@@ -1,6 +1,7 @@
 -module(tutils).
 
 -compile(export_all).
+-compile(nowarn_export_all).
 
 -include_lib("eunit/include/eunit.hrl").
 -include("utils.hrl").
