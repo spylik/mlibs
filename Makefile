@@ -20,7 +20,7 @@ endif
 # Development enviroment ("make shell" to run it).
 # --------------------------------------------------------------------
 
-SHELL_OPTS = -pa ebin/ test/ -env ERL_LIBS deps -eval 'lager:start()' -run mlibs autotest_on_compile
+SHELL_OPTS = -kernel shell_history enabled -pa ebin/ test/ -env ERL_LIBS deps -eval 'mlibs:discover()' -run mlibs autotest_on_compile
 
 # --------------------------------------------------------------------
 # We using erlang.mk 
