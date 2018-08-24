@@ -6,6 +6,15 @@
 -include_lib("eunit/include/eunit.hrl").
 -include("utils.hrl").
 
+-spec batch_receiver_and_loop() -> Result when
+    Result      :: {ReceiverPid, WorkerPid},
+    ReceiverPid :: pid(),
+    WorkerPid   :: pid().
+
+batch_receiver_and_loop() ->
+    Keeper = spawn_wait_loop('keep'),
+    {Keeper, batch_loop(Keeper)}.
+
 -spec batch_receiver_and_loop(Topic) -> PidOfKeeper when
     Topic           :: erlroute:topic(),
     PidOfKeeper     :: pid().
@@ -15,19 +24,34 @@ batch_receiver_and_loop(Topic) ->
     batch_loop(Topic, Keeper),
     Keeper.
 
--spec read_from_receiver(KeeperPid) -> Result when
+-spec read_and_flush_receiver(KeeperPid) -> Result when
     KeeperPid       :: pid(),
     Result          :: [] | [term()] | timeout_in_receiver.
 
-read_from_receiver(KeeperPid) ->
+read_and_flush_receiver(KeeperPid) ->
+    KeeperPid ! {'read_and_flush', self()},
+    receive
+        Data -> Data
+        after 15 -> timeout_in_receiver
+    end.
+
+
+-spec read_and_shutdown_receiver(KeeperPid) -> Result when
+    KeeperPid       :: pid(),
+    Result          :: [] | [term()] | timeout_in_receiver.
+
+read_and_shutdown_receiver(KeeperPid) ->
     KeeperPid ! {'read_and_die', self()},
     receive
         Data -> Data
         after 15 -> timeout_in_receiver
     end.
 
+batch_loop(ReceiverPid) when is_pid(ReceiverPid) ->
+    spawn_wait_loop(ReceiverPid);
+
 % batch receive loop in separate process (awaiting message in topic)
-batch_loop(Topic) ->
+batch_loop(Topic) when is_binary(Topic) ->
     WorkerPid = spawn_wait_loop(self()),
     erlroute:sub([{topic, Topic}], WorkerPid),
     WorkerPid.
@@ -57,6 +81,7 @@ wait_msg_loop(SendToPidOrKeep) -> wait_msg_loop(SendToPidOrKeep, 'got', []).
 wait_msg_loop(SendToPidOrKeep, WaitFor, Acc) ->
     receive
         stop -> true;
+        {'read_and_flush', Pid} -> Pid ! Acc, wait_msg_loop(SendToPidOrKeep, WaitFor, []);
         {'read_and_die', Pid} -> Pid ! Acc, true;
         Msg when is_pid(SendToPidOrKeep) ->
             case process_info(SendToPidOrKeep) of
