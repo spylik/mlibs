@@ -23,9 +23,11 @@ alias precmd "source ~/bin/precmd.csh"
 # A righteous umask
 umask 22
 
-set path = (/usr/local/opt/make/libexec/gnubin /usr/local/sbin /usr/local/bin /sbin /bin /usr/sbin /usr/bin /usr/games /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin $HOME/.rbenv/bin $HOME/.rbenv/plugins/ruby-build/bin /usr/lib/chromium-browser/chromedriver)
+set path = (/Applications/Postgres.app/Contents/Versions/10/bin /usr/local/opt/make/libexec/gnubin /usr/local/sbin /usr/local/bin /sbin /bin /usr/sbin /usr/bin /usr/games /opt/sbin /opt/bin /opt/local/sbin /opt/local/bin $HOME/bin $HOME/.local/bin $HOME/.rbenv/bin $HOME/.rbenv/plugins/ruby-build/bin /usr/lib/chromium-browser/chromedriver)
 
 setenv ERL_AFLAGS "-kernel shell_history enabled"
+setenv LDFLAGS -L/usr/local/opt/icu4c/lib
+setenv CPPFLAGS -I/usr/local/opt/icu4c/include
 
 set color
 setenv	EDITOR	vim
