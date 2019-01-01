@@ -24,6 +24,18 @@ batch_receiver_and_loop(Topic) ->
     batch_loop(Topic, Keeper),
     Keeper.
 
+-spec read_receiver(KeeperPid) -> Result when
+    KeeperPid       :: pid(),
+    Result          :: [] | [term()] | timeout_in_receiver.
+
+read_receiver(KeeperPid) ->
+    KeeperPid ! {'read', self()},
+    receive
+        Data -> Data
+        after 15 -> timeout_in_receiver
+    end.
+
+
 -spec read_and_flush_receiver(KeeperPid) -> Result when
     KeeperPid       :: pid(),
     Result          :: [] | [term()] | timeout_in_receiver.
@@ -81,6 +93,7 @@ wait_msg_loop(SendToPidOrKeep) -> wait_msg_loop(SendToPidOrKeep, 'got', []).
 wait_msg_loop(SendToPidOrKeep, WaitFor, Acc) ->
     receive
         stop -> true;
+        {'read', Pid} -> Pid ! Acc, wait_msg_loop(SendToPidOrKeep, WaitFor, Acc);
         {'read_and_flush', Pid} -> Pid ! Acc, wait_msg_loop(SendToPidOrKeep, WaitFor, []);
         {'read_and_die', Pid} -> Pid ! Acc, true;
         Msg when is_pid(SendToPidOrKeep) ->
