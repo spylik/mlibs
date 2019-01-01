@@ -28,6 +28,7 @@ set path = (/Applications/Postgres.app/Contents/Versions/10/bin /usr/local/opt/m
 setenv ERL_AFLAGS "-kernel shell_history enabled"
 setenv LDFLAGS -L/usr/local/opt/icu4c/lib
 setenv CPPFLAGS -I/usr/local/opt/icu4c/include
+setenv PKG_CONFIG_PATH /usr/local/opt/icu4c/lib/pkgconfig
 
 set color
 setenv	EDITOR	vim
