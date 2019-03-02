@@ -5,7 +5,6 @@
 -include("utils.hrl").
 
 -include_lib("eunit/include/eunit.hrl").
--include("utils.hrl").
 
 -spec batch_receiver_and_loop() -> Result when
     Result      :: {ReceiverPid, WorkerPid},
