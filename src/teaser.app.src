@@ -1,11 +1,8 @@
-{application, teaser, [
-	{description, "Some common-used scripts and erlang modules"},
-	{vsn, "0.0.12"},
-	{modules, []},
-	{registered, []},
-	{applications, [
-		kernel,
-        stdlib
-    ]},
-	{env, []}
-]}.
+{application,teaser,
+             [{description,"Some common-used scripts and erlang modules"},
+              {vsn,"0.0.21"},
+              {modules,[]},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {included_applications,[inets]},
+              {env,[]}]}.
