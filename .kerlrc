@@ -1,2 +1,2 @@
 KERL_DEFAULT_INSTALL_DIR=$HOME/erlang
-KERL_CONFIGURE_OPTIONS="--enable-shared-zlib --disable-dynamic-ssl-lib --with-ssl=/usr/local/opt/openssl --enable-smp-support --enable-threads --enable-kernel-poll --with-wx --without-odbc --enable-dirty-schedulers"
+KERL_CONFIGURE_OPTIONS="--enable-shared-zlib --disable-dynamic-ssl-lib --with-ssl=/usr/local/opt/openssl --enable-smp-support --enable-threads --with-wx --without-odbc --enable-dirty-schedulers"
