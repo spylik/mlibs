@@ -39,6 +39,8 @@ autocmd BufWritePre *.ex %s/\s\+$//e
 autocmd BufWritePre *.exs %s/\s\+$//e
 autocmd BufWritePre *.erl %s/\s\+$//e
 autocmd BufWritePre *.hrl %s/\s\+$//e
+autocmd BufWritePre Makefile %s/\s\+$//e
+
 
 " ------------------
 " End of setting per FileType
