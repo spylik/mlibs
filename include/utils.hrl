@@ -6,7 +6,8 @@
         ok = file:write_file(Filename, io_lib:fwrite("~s~n",[Data]))
     ).
     -define(debug(Msg),
-        error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]), true
+        Val = Msg,
+        error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Val]), Val
     ).
     -define(debug(Msg,Arg),
         error_logger:info_msg(lists:concat(["(~p)~p: ", Msg]), lists:append([?LINE,?MODULE], Arg)), true
@@ -14,7 +15,7 @@
 -else.
     -define(here, true).
     -define(dump_to_file(Data, Filename), true).
-    -define(debug(Msg), true).
+    -define(debug(Msg), Msg).
     -define(debug(Msg,Arg), true).
 -endif.
 
