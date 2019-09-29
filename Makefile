@@ -9,6 +9,8 @@ ifeq ($(shell basename $(shell dirname $(shell dirname $(realpath $(lastword $(M
     DEPS_DIR ?= $(shell dirname $(CURDIR))
 endif
 
+dep_lager = git https://github.com/erlang-lager/lager
+
 SHELL_DEPS = sync lager
 
 ifeq ($(USER),travis)
@@ -23,7 +25,7 @@ endif
 SHELL_OPTS = -kernel shell_history enabled -pa ebin/ test/ -env ERL_LIBS deps -eval 'mlibs:discover()' -run mlibs autotest_on_compile
 
 # --------------------------------------------------------------------
-# We using erlang.mk 
+# We using erlang.mk
 # --------------------------------------------------------------------
 
 include erlang.mk

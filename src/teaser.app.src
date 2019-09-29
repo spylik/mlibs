@@ -4,5 +4,4 @@
               {modules,[]},
               {registered,[]},
               {applications,[kernel,stdlib]},
-              {included_applications,[inets]},
               {env,[]}]}.
