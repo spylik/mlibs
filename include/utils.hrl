@@ -62,3 +62,13 @@
         error_logger:warning_msg(lists:concat(["(~p)~p:~p/~p (~p, ~p)", Msg]), [?LINE,M,F,A,self(),RegisteredName,Arg]),
         true
     ).
+
+% from https://gist.github.com/gdamjan/1272771
+-define(record_to_list(Record),
+    fun(Val) ->
+        Fields = record_info(fields, Record),
+        [_Tag| Values] = tuple_to_list(Val),
+        lists:zip(Fields, Values)
+    end
+).
+
