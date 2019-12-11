@@ -76,6 +76,17 @@ unixtimestamp_to_ms(DateTime) when is_binary(DateTime) ->
 unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
     erlang:convert_time_unit(DateTime, seconds, milli_seconds).
 
+% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp micro in millisecond)
+-spec unixtimestamp_micro_to_ms(DateTime) -> Result when
+    DateTime    :: integer() | binary() | 'seconds',
+    Result      :: mtime().
+
+unixtimestamp_micro_to_ms(DateTime) when is_binary(DateTime) ->
+    unixtimestamp_micro_to_ms(binary_to_integer(DateTime));
+unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
+    erlang:convert_time_unit(DateTime, micro_seconds, milli_seconds).
+
+
 % @doc Generate unique id
 -spec gen_id() -> Result when
     Result      :: id().
