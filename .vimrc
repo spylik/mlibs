@@ -38,6 +38,7 @@ autocmd FileType elixir setlocal ts=2 sts=2 sw=2 expandtab
 
 autocmd BufWritePre *.ex %s/\s\+$//e
 autocmd BufWritePre *.eex %s/\s\+$//e
+autocmd BufWritePre *.leex %s/\s\+$//e
 
 autocmd BufWritePre *.exs %s/\s\+$//e
 autocmd BufWritePre *.erl %s/\s\+$//e

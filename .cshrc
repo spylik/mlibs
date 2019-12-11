@@ -33,6 +33,12 @@ setenv PKG_CONFIG_PATH /usr/local/opt/icu4c/lib/pkgconfig
 setenv PATH /usr/local/opt/icu4c/bin:$PATH
 setenv PATH /usr/local/opt/icu4c/sbin:$PATH
 
+#docker stuff
+setenv DOCKER_TLS_VERIFY "1"
+setenv DOCKER_HOST "tcp://192.168.99.100:2376"
+setenv DOCKER_CERT_PATH "/Users/spyl/.docker/machine/machines/default"
+setenv DOCKER_MACHINE_NAME "default"
+
 set color
 setenv	EDITOR	vim
 #set printexitvalue 
