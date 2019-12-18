@@ -17,6 +17,7 @@ alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
 alias staging 'ssh admin@zebra-staging.entelios.zz -i ~/projects/Zebra/scripts/playbooks/ssh/zebra-staging.pem'
 alias pta 'escript ~/projects/parse_trans/ebin/parse_trans_pp.beam'
 alias weather 'curl wttr.in'
+alias dockerstart docker-machine restart default
 
 alias precmd "source ~/bin/precmd.csh"
 
@@ -35,7 +36,7 @@ setenv PATH /usr/local/opt/icu4c/sbin:$PATH
 
 #docker stuff
 setenv DOCKER_TLS_VERIFY "1"
-setenv DOCKER_HOST "tcp://192.168.99.100:2376"
+setenv DOCKER_HOST "tcp://192.168.99.101:2376"
 setenv DOCKER_CERT_PATH "/Users/spyl/.docker/machine/machines/default"
 setenv DOCKER_MACHINE_NAME "default"
 
