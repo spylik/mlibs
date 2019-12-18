@@ -17,7 +17,7 @@ alias radichproxy 'ssh -D 2001 -l xlet 31.131.16.244'
 alias staging 'ssh admin@zebra-staging.entelios.zz -i ~/projects/Zebra/scripts/playbooks/ssh/zebra-staging.pem'
 alias pta 'escript ~/projects/parse_trans/ebin/parse_trans_pp.beam'
 alias weather 'curl wttr.in'
-alias dockerstart docker-machine restart default
+alias dockerstart 'docker-machine restart default && docker-machine env'
 
 alias precmd "source ~/bin/precmd.csh"
 
