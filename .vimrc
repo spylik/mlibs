@@ -35,7 +35,6 @@ autocmd FileType asciidoc setlocal expandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType elixir setlocal ts=2 sts=2 sw=2 expandtab
 
-
 autocmd BufWritePre *.ex %s/\s\+$//e
 autocmd BufWritePre *.eex %s/\s\+$//e
 autocmd BufWritePre *.leex %s/\s\+$//e
@@ -66,7 +65,7 @@ set title
 set titlelen=70
 set titleold=""
 set titlestring=%<%F%=%l/%L-%P
-
+set redrawtime=10000
 " ------------------
 " End of settings for title
 " ------------------
