@@ -6,6 +6,6 @@
               {registered,[mcluster]},
               {applications,[kernel,stdlib]},
               {included_applications,[mnesia,mnesia_eleveldb]},
-              {mod, {maria_app, []}},
+              {mod, {mcluster_app, []}},
               {env, []}
              ]}.
