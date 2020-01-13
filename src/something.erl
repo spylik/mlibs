@@ -237,7 +237,7 @@ to_binary(Data) when is_list(Data) ->
     end;
 to_binary(Data) when is_integer(Data) -> erlang:integer_to_binary(Data);
 to_binary(Data) when is_float(Data) -> erlang:float_to_binary(Data, ?PRECISION);
-to_binary(Data) when is_tuple(Data) -> to_binary(erlang:tuple_to_list(Data));
+to_binary(Data) when is_tuple(Data) -> to_binary(lists:flatten(io_lib:format("~p", [Data])));
 to_binary(Data) -> erlang:term_to_binary(Data).
 
 %-------------- end of convert anything to binary --------------
