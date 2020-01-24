@@ -13,7 +13,7 @@
 
     to_integer/1,
     to_positive_integer/1,
-    
+
     to_binary/1,
 
     to_boolean/1
@@ -23,10 +23,10 @@
 
 %======== convert any numbers to float with precision  =========
 % @doc convert convertable integers, binaries, lists to floats.
-% it works with precision 8. 
-% For support precision we added some overhead : we converting float to lists 
+% it works with precision 8.
+% For support precision we added some overhead : we converting float to lists
 % with ?PRECISION option and then back to floats.
--spec to_float(Number) -> Result 
+-spec to_float(Number) -> Result
     when
         Number :: float() | integer() | nonempty_list() | binary(),
         Result :: float().
@@ -35,21 +35,21 @@ to_float(Number) when is_float(Number) -> to_float(float_to_list(Number, ?PRECIS
 to_float(Number) when is_integer(Number) -> float(Number);
 to_float(Number) when is_list(Number) ->
     case lists:member($.,Number) of
-        true -> 
+        true ->
             list_to_float(
                 float_to_list(
-                    try list_to_float(Number) 
+                    try list_to_float(Number)
                     catch
                         _:_ -> list_to_float(before_sign(Number))
-                    end, 
+                    end,
                     ?PRECISION
                 )
             );
-        false -> 
+        false ->
             try list_to_integer(Number) of
                 Num -> to_float(Num)
             catch
-                _:_ -> 
+                _:_ ->
                     list_to_float(
                         float_to_list(
                             list_to_float(before_sign(Number)),
@@ -57,14 +57,14 @@ to_float(Number) when is_list(Number) ->
                         )
                     )
             end
-                
+
 
     end;
 to_float(Number) when is_binary(Number) -> to_float(binary_to_list(Number)).
 
-% Following piece of code proposed by Richard A. O'Keefe in erlang-questions mailing 
+% Following piece of code proposed by Richard A. O'Keefe in erlang-questions mailing
 % list to deal with C, Ada, Smalltalk and some Fortran format of float numbers.
-% The general problem is that Erlang more pedantic about compact floats representation 
+% The general problem is that Erlang more pedantic about compact floats representation
 % and can convert only "1.0e-8" format but cannot convert things like "1e-8".
 %
 % Link to the thread: http://erlang.org/pipermail/erlang-questions/2017-February/091614.html
@@ -75,15 +75,15 @@ before_sign("-" ++ Chars) ->
 before_sign(Chars) ->
     after_sign(Chars).
 
-after_sign([Char|Chars]) when 
-        Char >= $0, 
+after_sign([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char|after_digit(Chars)];
 after_sign("." ++ Chars) ->
     "0." ++ after_dot(Chars).
 
-after_digit([Char|Chars]) when 
-        Char >= $0, 
+after_digit([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char|after_digit(Chars)];
 after_digit("_" ++ Chars) ->
@@ -93,26 +93,26 @@ after_digit("." ++ Chars) ->
 after_digit(Chars) ->
     ".0" ++ after_fraction(Chars).
 
-after_dot([Char|Chars]) when 
-        Char >= $0, 
+after_dot([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char|after_fraction(Chars)];
 after_dot(Chars) ->
     "0" ++ after_fraction(Chars).
 
-after_fraction([Char|Chars]) when 
-        Char >= $0, 
+after_fraction([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char | after_fraction(Chars)];
 after_fraction("_" ++ Chars) ->
     after_fraction(Chars);
 after_fraction([Char|Chars]) when
-        Char =:= $e; 
-        Char =:= $d; 
-        Char =:= $q; 
-        Char =:= $E; 
-        Char =:= $D; 
-        Char =:= $Q -> 
+        Char =:= $e;
+        Char =:= $d;
+        Char =:= $q;
+        Char =:= $E;
+        Char =:= $D;
+        Char =:= $Q ->
     "e" ++ after_e(Chars);
 
 after_fraction(Chars) ->
@@ -125,22 +125,22 @@ after_e("-" ++ Chars) ->
 after_e(Chars) ->
     after_e_sign(Chars).
 
-after_e_sign([Char|Chars]) when 
-        Char >= $0, 
+after_e_sign([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char|after_e_digits(Chars)].
 
-after_e_digits([Char|Chars]) when 
-        Char >= $0, 
+after_e_digits([Char|Chars]) when
+        Char >= $0,
         Char =< $9 ->
     [Char|after_e_digits(Chars)];
 after_e_digits("_" ++ Chars) ->
     after_e_digits(Chars);
-after_e_digits([Char]) when 
-        Char =:= $f ; 
-        Char =:= $l ; 
-        Char =:= $F ; 
-        Char =:= $L -> 
+after_e_digits([Char]) when
+        Char =:= $f ;
+        Char =:= $l ;
+        Char =:= $F ;
+        Char =:= $L ->
     "";
 after_e_digits([]) ->
     "".
@@ -154,7 +154,7 @@ after_e_digits([]) ->
         Result :: float().
 
 to_positive_float(Number) ->
-    case to_float(Number) of 
+    case to_float(Number) of
         Num when Num > 0 -> Num;
         Num when Num == 0 -> 0.0;
         _ -> throw({error, {cant_convert_to_positive_float, Number}})
@@ -164,8 +164,8 @@ to_positive_float(Number) ->
 
 %=============== convert any numbers to integers ===============
 % @doc convert convertable floats, binaries, lists to integer.
-% Attention: it works with [{decimals,8}, compact] precision parameter for floats. 
-% It means it will silent convert float 123.000000001 to 123 integer but throw error 
+% Attention: it works with [{decimals,8}, compact] precision parameter for floats.
+% It means it will silent convert float 123.000000001 to 123 integer but throw error
 % while try convert 123.00001.
 -spec to_integer(Number) -> Result
     when
@@ -175,7 +175,7 @@ to_positive_float(Number) ->
 to_integer(Number) when is_integer(Number) -> Number;
 to_integer(Number) when is_float(Number) -> to_integer(float_to_list(Number, ?PRECISION));
 to_integer(Number) when is_list(Number) ->
-    case catch list_to_integer(Number) of 
+    case catch list_to_integer(Number) of
         {_, _} ->
             case string:to_integer(Number) of
                 {SI, ".0"} -> SI;
@@ -186,15 +186,15 @@ to_integer(Number) when is_list(Number) ->
                 {SI, ".000000"} -> SI;
                 {SI, ".0000000"} -> SI;
                 {SI, ".00000000"} -> SI;
-                {SI, [46|Sublist]} -> 
-                    case lists:sublist(Sublist,8) of 
-                        "00000000" -> SI; 
-                        _ -> throw({error, {cant_convert_to_integer, Number}}) 
+                {SI, [46|Sublist]} ->
+                    case lists:sublist(Sublist,8) of
+                        "00000000" -> SI;
+                        _ -> throw({error, {cant_convert_to_integer, Number}})
                     end
             end;
         Result -> Result
     end;
-to_integer(Number) when is_binary(Number) -> 
+to_integer(Number) when is_binary(Number) ->
     case catch erlang:binary_to_integer(Number) of
         {_, _} -> to_integer(erlang:binary_to_float(Number));
         Result -> Result
@@ -209,7 +209,7 @@ to_integer(Number) when is_binary(Number) ->
         Result :: non_neg_integer().
 
 to_positive_integer(Number) ->
-    case to_integer(Number) of 
+    case to_integer(Number) of
         Num when Num > 0 -> Num;
         Num when Num == 0 -> 0;
         _ -> throw({error, {cant_convert_to_positive_integer, Number}})
@@ -219,7 +219,7 @@ to_positive_integer(Number) ->
 
 %================ convert anything to binary ===================
 % @doc convert convertable floats, integers, atoms, lists and terms to binaries.
-% Attention: it works with [{decimals,8}, compact] precision parameter for floats. 
+% Attention: it works with [{decimals,8}, compact] precision parameter for floats.
 % It means it will convert floats 123.123000 to <<"123.123">> and strip the remaining zeros.
 -spec to_binary(Data) -> Result
     when
@@ -228,9 +228,16 @@ to_positive_integer(Number) ->
 
 to_binary(Data) when is_binary(Data) -> Data;
 to_binary(Data) when is_atom(Data) -> erlang:atom_to_binary(Data, utf8);
-to_binary(Data) when is_list(Data) -> erlang:list_to_binary(Data);
+to_binary(Data) when is_list(Data) ->
+    try erlang:list_to_binary(Data) of
+        Value -> Value
+    catch
+        _:_ ->
+            lists:foldr(fun(Value, Acc) -> X = to_binary(Value), <<X/binary, Acc/binary>> end, <<>>, Data)
+    end;
 to_binary(Data) when is_integer(Data) -> erlang:integer_to_binary(Data);
 to_binary(Data) when is_float(Data) -> erlang:float_to_binary(Data, ?PRECISION);
+to_binary(Data) when is_tuple(Data) -> to_binary(lists:flatten(io_lib:format("~p", [Data])));
 to_binary(Data) -> erlang:term_to_binary(Data).
 
 %-------------- end of convert anything to binary --------------
