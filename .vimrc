@@ -16,6 +16,7 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'hashivim/vim-terraform'
 Plugin 'othree/html5.vim'
 Plugin 'elixir-lang/vim-elixir'
 Plugin 'ctrlpvim/ctrlp.vim'
