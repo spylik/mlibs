@@ -133,6 +133,8 @@ build_binary_key(List, Delm) -> build_key_lists(List, [], Delm, binary).
 % support function for build key with lists module
 build_key_lists([H|T],[], Delm, Type) when is_atom(H) ->
     build_key_lists(T, atom_to_list(H), Delm, Type);
+build_key_lists([H|T],[], Delm, Type) when is_number(H) ->
+    build_key_lists(T, io_lib:write(H), Delm, Type);
 build_key_lists([H|T],[], Delm, Type) when is_list(H) ->
     build_key_lists(T, H, Delm, Type);
 build_key_lists([H|T],[], Delm, Type) when is_binary(H) ->
@@ -141,6 +143,8 @@ build_key_lists([H|T],[], Delm, Type) when is_tuple(H) ->
     build_key_lists(T, io_lib:write(H), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_atom(H) ->
     build_key_lists(T, lists:concat([Acc, Delm, atom_to_list(H)]), Delm, Type);
+build_key_lists([H|T],Acc, Delm, Type) when is_number(H) ->
+    build_key_lists(T, lists:concat([Acc, Delm, io_lib:write(H)]), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_list(H) ->
     build_key_lists(T, lists:concat([Acc, Delm, H]), Delm, Type);
 build_key_lists([H|T],Acc, Delm, Type) when is_binary(H) ->
