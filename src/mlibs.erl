@@ -109,14 +109,15 @@ wait_for(Msg, Timeout) ->
     ?info(Msg),
     timer:sleep(Timeout).
 
-wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts) when MaxAttempts > 0 ->
+wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts, ReturnInCaseOfFail) when MaxAttempts > 0 ->
     case erlang:apply(Function, Arguments) of
         Expectation ->
             Expectation;
         _Other ->
             timer:sleep(Timeout),
-            wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts-1)
-    end.
+            wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts-1, ReturnInCaseOfFail)
+    end;
+wait_for(_Function, _Arguments, _Expectation, _Timeout, _MaxAttempts, ReturnInCaseOfFail) -> ReturnInCaseOfFail.
 
 % @doc Generate password (by erlangcentral)
 -spec generate_password(Number) -> Password when
