@@ -104,9 +104,19 @@ random_atom() ->
 % @doc wait_for
 wait_for(Msg) ->
     wait_for(Msg, 1000).
+
 wait_for(Msg, Timeout) ->
     ?info(Msg),
     timer:sleep(Timeout).
+
+wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts) when MaxAttempts > 0 ->
+    case erlang:apply(Function, Arguments) of
+        Expectation ->
+            Expectation;
+        _Other ->
+            timer:sleep(Timeout),
+            wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts-1)
+    end.
 
 % @doc Generate password (by erlangcentral)
 -spec generate_password(Number) -> Password when
