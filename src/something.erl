@@ -5,10 +5,14 @@
     -compile(export_all).
 -endif.
 
--define(PRECISION,  [{decimals, 8}, compact]).
+
+-define(PRECISION_VALUE, 8).
+-define(PRECISION,  [{decimals, ?PRECISION_VALUE}, compact]).
+-define(PRECISION(Value), [{decimals, Value}, compact]).
 
 -export([
     to_float/1,
+    to_float/2,
     to_positive_float/1,
 
     to_integer/1,
@@ -31,9 +35,12 @@
         Number :: float() | integer() | nonempty_list() | binary(),
         Result :: float().
 
-to_float(Number) when is_float(Number) -> to_float(float_to_list(Number, ?PRECISION));
-to_float(Number) when is_integer(Number) -> float(Number);
-to_float(Number) when is_list(Number) ->
+
+to_float(Number) -> to_float(Number, ?PRECISION_VALUE).
+
+to_float(Number, Precision) when is_float(Number) -> to_float(float_to_list(Number, ?PRECISION(Precision)));
+to_float(Number, Precision) when is_integer(Number) -> float(Number);
+to_float(Number, Precision) when is_list(Number) ->
     case lists:member($.,Number) of
         true ->
             list_to_float(
@@ -42,7 +49,7 @@ to_float(Number) when is_list(Number) ->
                     catch
                         _:_ -> list_to_float(before_sign(Number))
                     end,
-                    ?PRECISION
+                    ?PRECISION(Precision)
                 )
             );
         false ->
@@ -53,14 +60,14 @@ to_float(Number) when is_list(Number) ->
                     list_to_float(
                         float_to_list(
                             list_to_float(before_sign(Number)),
-                            ?PRECISION
+                            ?PRECISION(Precision)
                         )
                     )
             end
 
 
     end;
-to_float(Number) when is_binary(Number) -> to_float(binary_to_list(Number)).
+to_float(Number, Precision) when is_binary(Number) -> to_float(binary_to_list(Number), Precision).
 
 % Following piece of code proposed by Richard A. O'Keefe in erlang-questions mailing
 % list to deal with C, Ada, Smalltalk and some Fortran format of float numbers.
