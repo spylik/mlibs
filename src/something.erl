@@ -39,7 +39,7 @@
 to_float(Number) -> to_float(Number, ?PRECISION_VALUE).
 
 to_float(Number, Precision) when is_float(Number) -> to_float(float_to_list(Number, ?PRECISION(Precision)));
-to_float(Number, Precision) when is_integer(Number) -> float(Number);
+to_float(Number, _Precision) when is_integer(Number) -> float(Number);
 to_float(Number, Precision) when is_list(Number) ->
     case lists:member($.,Number) of
         true ->
