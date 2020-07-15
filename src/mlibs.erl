@@ -17,6 +17,7 @@
     mtime/0
     ]).
 
+
 % @doc Get current system time in milli_seconds (unix timestamp in milliseconds)
 -spec get_time() -> Result when
     Result      :: mtime().
@@ -237,3 +238,10 @@ atoms_starting_at(N) ->
         error:badarg ->
             []
     end.
+
+hexlify(Bin) when is_binary(Bin) ->
+    << <<(hex(H)),(hex(L))>> || <<H:4,L:4>> <= Bin >>.
+
+hex(C) when C < 10 -> $0 + C;
+hex(C) -> $a + C - 10.
+
