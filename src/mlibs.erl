@@ -39,7 +39,9 @@ http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
         seconds, milli_seconds
     ).
 
-% @doc Time <<"2017-07-13 14:45:47">> to ms 63667176347000
+% @doc
+% Time <<"2017-07-13 14:45:47">> to ms 63667176347000
+% Time <<"2017-07-13 14:45:47.588011">> to ms 63667176347588
 -spec datetime_to_ms(DateTime) -> Result when
     DateTime    :: list() | binary(),
     Result      :: mtime().
@@ -65,7 +67,32 @@ datetime_to_ms(<<
             }
         ),
         seconds, milli_seconds
-    ).
+    );
+datetime_to_ms(<<
+    Y:4/binary,
+    $-,
+    M:2/binary,
+    $-,
+    D:2/binary,
+    " ",
+    Hrs:2/binary,
+    $:,
+    Min:2/binary,
+    $:,
+    Sec:4/binary,
+    $.,
+    MilliSeconds:3/binary,
+    _MicroSecconds:3/binary
+    >>
+) -> erlang:convert_time_unit(
+        calendar:datetime_to_gregorian_seconds(
+            {
+                {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
+                {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
+            }
+        ),
+        seconds, milli_seconds
+    ) + MilliSeconds.
 
 % @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec unixtimestamp_to_ms(DateTime) -> Result when
