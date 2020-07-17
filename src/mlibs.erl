@@ -102,6 +102,25 @@ gen_id() ->
 random_atom() ->
     list_to_atom(erlang:ref_to_list(make_ref())).
 
+-spec random_atom(Length) -> Result when
+    Length  :: pos_integer(),
+    Result  :: atom().
+
+random_atom(Length) ->
+    list_to_atom(random_string(Length, "abcdefghijklmnopqrstuvwxyz1234567890")).
+
+-spec random_string(Length, AllowedChars) -> Result when
+    Length          :: pos_integer(),
+    AllowedChars    :: list(),
+    Result          :: list().
+
+random_string(Length, AllowedChars) ->
+    lists:foldl(fun(_, Acc) ->
+                        [lists:nth(rand:uniform(length(AllowedChars)),
+                                   AllowedChars)]
+                            ++ Acc
+                end, [], lists:seq(1, Length)).
+
 % @doc wait_for
 wait_for(Msg) ->
     wait_for(Msg, 1000).
