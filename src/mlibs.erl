@@ -79,7 +79,7 @@ datetime_to_ms(<<
     $:,
     Min:2/binary,
     $:,
-    Sec:4/binary,
+    Sec:2/binary,
     $.,
     MilliSeconds:3/binary,
     _MicroSecconds:3/binary
@@ -92,7 +92,7 @@ datetime_to_ms(<<
             }
         ),
         seconds, milli_seconds
-    ) + MilliSeconds.
+    ) + binary_to_integer(MilliSeconds).
 
 % @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec unixtimestamp_to_ms(DateTime) -> Result when
