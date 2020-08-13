@@ -88,3 +88,5 @@ endif
 if (-r $HOME/bin/rbenvWrap) then 
 	eval `rbenvWrap init -`
 endif
+
+setenv PATH /usr/local/opt/terraform@0.12/bin:$PATH
