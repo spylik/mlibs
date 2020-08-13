@@ -17,6 +17,7 @@
     mtime/0
     ]).
 
+
 % @doc Get current system time in milli_seconds (unix timestamp in milliseconds)
 -spec get_time() -> Result when
     Result      :: mtime().
@@ -38,7 +39,9 @@ http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
         seconds, milli_seconds
     ).
 
-% @doc Time <<"2017-07-13 14:45:47">> to ms 63667176347000
+% @doc
+% Time <<"2017-07-13 14:45:47">> to ms 63667176347000
+% Time <<"2017-07-13 14:45:47.588011">> to ms 63667176347588
 -spec datetime_to_ms(DateTime) -> Result when
     DateTime    :: list() | binary(),
     Result      :: mtime().
@@ -64,7 +67,32 @@ datetime_to_ms(<<
             }
         ),
         seconds, milli_seconds
-    ).
+    );
+datetime_to_ms(<<
+    Y:4/binary,
+    $-,
+    M:2/binary,
+    $-,
+    D:2/binary,
+    " ",
+    Hrs:2/binary,
+    $:,
+    Min:2/binary,
+    $:,
+    Sec:2/binary,
+    $.,
+    MilliSeconds:3/binary,
+    _MicroSecconds:3/binary
+    >>
+) -> erlang:convert_time_unit(
+        calendar:datetime_to_gregorian_seconds(
+            {
+                {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
+                {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
+            }
+        ),
+        seconds, milli_seconds
+    ) + binary_to_integer(MilliSeconds).
 
 % @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec unixtimestamp_to_ms(DateTime) -> Result when
@@ -100,6 +128,25 @@ gen_id() ->
 
 random_atom() ->
     list_to_atom(erlang:ref_to_list(make_ref())).
+
+-spec random_atom(Length) -> Result when
+    Length  :: pos_integer(),
+    Result  :: atom().
+
+random_atom(Length) ->
+    list_to_atom(random_string(Length, "abcdefghijklmnopqrstuvwxyz1234567890")).
+
+-spec random_string(Length, AllowedChars) -> Result when
+    Length          :: pos_integer(),
+    AllowedChars    :: list(),
+    Result          :: list().
+
+random_string(Length, AllowedChars) ->
+    lists:foldl(fun(_, Acc) ->
+                        [lists:nth(rand:uniform(length(AllowedChars)),
+                                   AllowedChars)]
+                            ++ Acc
+                end, [], lists:seq(1, Length)).
 
 % @doc wait_for
 wait_for(Msg) ->
@@ -237,3 +284,10 @@ atoms_starting_at(N) ->
         error:badarg ->
             []
     end.
+
+hexlify(Bin) when is_binary(Bin) ->
+    << <<(hex(H)),(hex(L))>> || <<H:4,L:4>> <= Bin >>.
+
+hex(C) when C < 10 -> $0 + C;
+hex(C) -> $a + C - 10.
+

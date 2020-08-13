@@ -13,6 +13,7 @@
 -export([
     to_float/1,
     to_float/2,
+    to_float/3,
     to_positive_float/1,
 
     to_integer/1,
@@ -38,9 +39,35 @@
 
 to_float(Number) -> to_float(Number, ?PRECISION_VALUE).
 
-to_float(Number, Precision) when is_float(Number) -> to_float(float_to_list(Number, ?PRECISION(Precision)));
-to_float(Number, _Precision) when is_integer(Number) -> float(Number);
-to_float(Number, Precision) when is_list(Number) ->
+% @doc convert to floats with given precision after coma with default 'round' strategy
+-spec to_float(Number, Precision) -> Result
+    when
+        Number      :: float() | integer() | nonempty_list() | binary(),
+        Precision   :: pos_integer(),
+        Result      :: float().
+
+to_float(Number, Precision) -> to_float(Number, Precision, round).
+
+% @doc convert to floats with given precision and given rounding stratgy.
+-spec to_float(Number, Precision, RoundingRules) -> Result when
+    Number          :: float() | integer() | nonempty_list() | binary(),
+    Precision       :: pos_integer(),
+    RoundingRules   :: round | ceil | floor,
+    Result          :: float().
+
+to_float(Number, Precision, round) when is_float(Number) ->
+    to_float(float_to_list(Number, ?PRECISION(Precision)));
+
+to_float(Number, Precision, ceil) when is_float(Number) ->
+    P = math:pow(10, 8),
+    to_float(float_to_list(ceil(Number * P) / P, ?PRECISION(Precision)));
+
+to_float(Number, Precision, floor) when is_float(Number) ->
+    P = math:pow(10, 8),
+    to_float(float_to_list(floor(Number * P) / P, ?PRECISION(Precision)));
+
+to_float(Number, _Precision, _RoundDirection) when is_integer(Number) -> float(Number);
+to_float(Number, Precision, RoundDirection) when is_list(Number) ->
     case lists:member($.,Number) of
         true ->
             list_to_float(
@@ -54,7 +81,7 @@ to_float(Number, Precision) when is_list(Number) ->
             );
         false ->
             try list_to_integer(Number) of
-                Num -> to_float(Num)
+                Num -> to_float(Num, Precision, RoundDirection)
             catch
                 _:_ ->
                     list_to_float(
@@ -67,7 +94,7 @@ to_float(Number, Precision) when is_list(Number) ->
 
 
     end;
-to_float(Number, Precision) when is_binary(Number) -> to_float(binary_to_list(Number), Precision).
+to_float(Number, Precision, RoundDirection) when is_binary(Number) -> to_float(binary_to_list(Number), Precision, RoundDirection).
 
 % Following piece of code proposed by Richard A. O'Keefe in erlang-questions mailing
 % list to deal with C, Ada, Smalltalk and some Fortran format of float numbers.
