@@ -8,6 +8,7 @@ colorscheme elflord
 map <F10> :set encoding=koi8-r<CR>
 map <F11> :set encoding=8bit-cp1251<CR>
 map <F12> :set encoding=utf-8<CR>
+nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 " ==================
 " Vundle section
