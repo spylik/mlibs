@@ -35,6 +35,7 @@ autocmd FileType java setlocal expandtab
 autocmd FileType nix setlocal expandtab
 autocmd FileType asciidoc setlocal expandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType elixir setlocal ts=2 sts=2 sw=2 expandtab
 
 autocmd BufWritePre *.ex %s/\s\+$//e

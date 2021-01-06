@@ -1,1 +1,1 @@
-au BufNewFile,BufRead *.ex,*.exs, set ft=elixir
+au BufNewFile,BufRead *.ex,*.exs set ft=elixir
