@@ -5,11 +5,21 @@
     -define(dump_to_file(Data),
         ok = file:write_file(
                lists:concat(["log/", ?MODULE, ?LINE, ref_to_list(make_ref())]),
-               io_lib:fwrite("~s~n",[Data])
+               io_lib:fwrite("~s",[Data])
               )
     ).
+    -define(dump_to_file(Data, Filename, AppendNewLine),
+        begin
+            case AppendNewLine of
+                true ->
+                    ok = file:write_file(Filename, io_lib:fwrite("~s~n",[Data]));
+                false ->
+                    ok = file:write_file(Filename, io_lib:fwrite("~s",[Data]))
+            end
+        end
+    ).
     -define(dump_to_file(Data, Filename),
-        ok = file:write_file(Filename, io_lib:fwrite("~s~n",[Data]))
+        ?dump_to_file(Data, Filename, true)
     ).
     -define(debug(Msg),
         error_logger:info_msg("(~p)~p: ~p is ~p", [?LINE,?MODULE,??Msg,Msg]), true
@@ -21,6 +31,7 @@
     -define(here, true).
     -define(dump_to_file(Data), true).
     -define(dump_to_file(Data, Filename), true).
+    -define(dump_to_file(Data, Filename, AppendNewLine), true).
     -define(debug(Msg), true).
     -define(debug(Msg,Arg), true).
 -endif.

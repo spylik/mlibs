@@ -33,10 +33,11 @@ setenv CPPFLAGS -I/usr/local/opt/icu4c/include
 setenv PKG_CONFIG_PATH /usr/local/opt/icu4c/lib/pkgconfig
 setenv PATH /usr/local/opt/icu4c/bin:$PATH
 setenv PATH /usr/local/opt/icu4c/sbin:$PATH
+setenv OBJC_DISABLE_INITIALIZE_FORK_SAFETY "YES"
 
 #docker stuff
 setenv DOCKER_TLS_VERIFY "1"
-setenv DOCKER_HOST "tcp://192.168.99.101:2376"
+setenv DOCKER_HOST "tcp://192.168.99.102:2376"
 setenv DOCKER_CERT_PATH "/Users/spyl/.docker/machine/machines/default"
 setenv DOCKER_MACHINE_NAME "default"
 
