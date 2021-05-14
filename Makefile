@@ -4,9 +4,9 @@ PROJECT = teaser
 # Defining OTP version for this project which uses by kerl
 # --------------------------------------------------------------------
 
+ifneq ($(shell basename $(shell dirname $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))), deps)
 ERLANG_OTP = OTP-22.3
-
-
+endif
 
 # --------------------------------------------------------------------
 # Dependencies.
