@@ -5,7 +5,7 @@
 
 -include("utils.hrl").
 
--type id()      :: {neg_integer(), pos_integer()}.
+-type id()      :: integer().
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
 -define(epoch, 62167219200).
@@ -119,8 +119,7 @@ unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
 -spec gen_id() -> Result when
     Result      :: id().
 
-gen_id() ->
-    {erlang:monotonic_time(), erlang:unique_integer([monotonic,positive])}.
+gen_id() -> erlang:unique_integer([monotonic]).
 
 % @doc Generate random atom
 -spec random_atom() -> Result when
