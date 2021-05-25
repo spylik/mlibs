@@ -5,12 +5,12 @@
 
 -include("utils.hrl").
 
--type id()      :: {integer(), node()}.
+-type id()      :: {integer(), integer()}.
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
 -define(epoch, 62167219200).
 -define(dec282016ms, 1482924639084).
-
+-define(lowest_bigint, -9223372036854775808).
 
 -export_type([
     id/0,
@@ -24,6 +24,27 @@
 
 get_time() ->
     erlang:system_time(milli_seconds).
+
+% @doc convert id to mtime
+id_to_ms({MonoTime, _Node}) ->
+    erlang:convert_time_unit(
+        MonoTime + erlang:time_offset(),
+        nanosecond,
+        milli_seconds
+     ).
+
+ms_to_id_ms_next_pattern(MTime) when is_integer(MTime) ->
+    {
+        ms_to_monotonic(MTime),
+        -9223372036854775808
+    }.
+
+ms_to_monotonic(MTime) ->
+        erlang:convert_time_unit(
+            MTime,
+            milli_seconds,
+            nanosecond
+        ) - erlang:time_offset().
 
 % @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec http_time_to_unix_time_ms(DateTime) -> Result when
@@ -119,7 +140,7 @@ unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
 -spec gen_id() -> Result when
     Result      :: id().
 
-gen_id() -> {erlang:unique_integer([monotonic]), node()}.
+gen_id() -> {erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic])}.
 
 % @doc Generate random atom
 -spec random_atom() -> Result when
