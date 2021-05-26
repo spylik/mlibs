@@ -176,7 +176,6 @@ ms_to_id_ms_next_pattern(MTime) ->
         node()
     }.
 
-
 % @doc Generate MatchSpec pattern for strict id.
 -spec ms_to_strict_id_ms_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
