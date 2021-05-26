@@ -1,0 +1,36 @@
+name: Erlang CI
+
+on: push
+
+jobs:
+  tests:
+
+    name: Build and test
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Load enviroment variables from .env
+      uses: falti/dotenv-action@v0.2.4
+      id: dotenv
+
+    - name: Set up Erlang
+      uses: gleam-lang/setup-erlang@v1.1.2
+      with:
+        otp-version: ${{ steps.dotenv.outputs.ERLANG_VERSION }}
+    - name: Restore dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          deps
+        key: ${{ runner.os }}-erlang-${{ steps.dotenv.outputs.ERLANG_VERSION }}-MakeFileHash-${{ hashFiles('**/Makefile') }}
+        restore-keys: ${{ runner.os }}-erlang-${{ steps.dotenv.outputs.ERLANG_VERSION }}
+
+    - name: Build it
+      run: make
+
+    - name: Run tests
+      run: make tests COVER=1
+
+    - name: Run dialyzer
+      run: make tests COVER=1
