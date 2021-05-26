@@ -33,4 +33,7 @@ jobs:
       run: make tests COVER=1
 
     - name: Run dialyzer
-      run: make tests COVER=1
+      run: make dialyze
+
+    - name: Publish test code coverage
+      run: escript ./deps/covertool/ebin/covertool.beam -cover ./eunit.coverdata -output cobertura.xml -appname teaser -src ./src && codecov
