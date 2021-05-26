@@ -1,3 +1,3 @@
-image:https://github.com/spylik/teaser/actions/workflows/erlang.yml/badge.svg?branch=develop[title="Build Status", link="https://travis-ci.org/spylik/teaser"] image:https://codecov.io/gh/spylik/teaser/branch/develop/graph/badge.svg[title="Codecov", link="https://codecov.io/gh/spylik/teaser/branches/develop"]
+image:https://github.com/spylik/teaser/actions/workflows/erlang.yml/badge.svg?branch=develop[title="Build Status", link="https://github.com/spylik/teaser/actions?query=branch%3Adevelop"] image:https://codecov.io/gh/spylik/teaser/branch/develop/graph/badge.svg[title="Codecov", link="https://codecov.io/gh/spylik/teaser/branches/develop"]
 
 Some tools
