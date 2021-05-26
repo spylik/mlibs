@@ -1,5 +1,8 @@
 PROJECT = teaser
 
+# Change this line for expire cache of deps and plt
+MAKEFILE_VERSION = 0.0.1
+
 # --------------------------------------------------------------------
 # Defining OTP version for this project which uses by kerl
 # --------------------------------------------------------------------

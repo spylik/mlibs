@@ -22,6 +22,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: |
+          .teaser.plt
           deps
         key: ${{ runner.os }}-erlang-${{ steps.dotenv.outputs.ERLANG_VERSION }}-MakeFileHash-${{ hashFiles('**/Makefile') }}
         restore-keys: ${{ runner.os }}-erlang-${{ steps.dotenv.outputs.ERLANG_VERSION }}
