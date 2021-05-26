@@ -35,5 +35,8 @@ jobs:
     - name: Run dialyzer
       run: make dialyze
 
+    - name: Install codecov
+      run: sudo pip install codecov
+
     - name: Publish test code coverage
       run: escript ./deps/covertool/ebin/covertool.beam -cover ./eunit.coverdata -output cobertura.xml -appname teaser -src ./src && codecov
