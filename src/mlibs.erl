@@ -5,7 +5,10 @@
 
 -include("utils.hrl").
 
--type id()      :: {integer(), integer()}.
+-type id_type()     :: strict | unstrict.
+-type id()          :: {integer(), node()}.
+-type strict_id()   :: {{integer(), integer()}, node()}.
+
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
 -define(epoch, 62167219200).
@@ -18,33 +21,13 @@
     ]).
 
 
-% @doc Get current system time in milli_seconds (unix timestamp in milliseconds)
+% @doc Get current system POSIX time in milli_seconds (unix timestamp in milliseconds)
+% the POSIX means it's since ?epoch and in GMT
 -spec get_time() -> Result when
     Result      :: mtime().
 
 get_time() ->
     erlang:system_time(milli_seconds).
-
-% @doc convert id to mtime
-id_to_ms({MonoTime, _Node}) ->
-    erlang:convert_time_unit(
-        MonoTime + erlang:time_offset(),
-        nanosecond,
-        milli_seconds
-     ).
-
-ms_to_id_ms_next_pattern(MTime) when is_integer(MTime) ->
-    {
-        ms_to_monotonic(MTime),
-        -9223372036854775808
-    }.
-
-ms_to_monotonic(MTime) ->
-        erlang:convert_time_unit(
-            MTime,
-            milli_seconds,
-            nanosecond
-        ) - erlang:time_offset().
 
 % @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in millisecond)
 -spec http_time_to_unix_time_ms(DateTime) -> Result when
@@ -86,7 +69,7 @@ datetime_to_ms(<<
                 {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
                 {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
             }
-        ),
+        ) - ?epoch,
         seconds, milli_seconds
     );
 datetime_to_ms(<<
@@ -111,7 +94,7 @@ datetime_to_ms(<<
                 {binary_to_integer(Y), binary_to_integer(M), binary_to_integer(D)},
                 {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
             }
-        ),
+        ) - ?epoch,
         seconds, milli_seconds
     ) + binary_to_integer(MilliSeconds).
 
@@ -135,12 +118,80 @@ unixtimestamp_micro_to_ms(DateTime) when is_binary(DateTime) ->
 unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
     erlang:convert_time_unit(DateTime, micro_seconds, milli_seconds).
 
+-spec id_function(IdType) -> Result when
+    IdType  :: id_type(),
+    Result  :: atom().
+
+id_function(strict) -> gen_strict_id;
+id_function(unstrict) -> gen_id.
 
 % @doc Generate unique id
 -spec gen_id() -> Result when
     Result      :: id().
 
-gen_id() -> {erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic])}.
+gen_id() -> {erlang:monotonic_time(nanosecond), node()}.
+
+% @doc the interface for generate strict id (when we really need it. it's more expensive).
+-spec gen_strict_id() -> Result when
+      Result      :: strict_id().
+
+gen_strict_id() ->
+    {{erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic])}, node()}.
+
+% @doc convert id to mtime
+
+-spec id_to_ms(IdOrStrictId) -> Result when
+    IdOrStrictId    :: id() | strict_id(),
+    Result          :: mtime().
+
+id_to_ms({{MonoTime, _UniqueInteger}, Node}) -> id_to_ms({MonoTime, Node});
+id_to_ms({MonoTime, _Node}) ->
+    erlang:convert_time_unit(
+        MonoTime + erlang:time_offset(),
+        nanosecond,
+        milli_seconds
+     ).
+
+% @doc
+% Because for different scenarious we may require just id() but for some strict_id() we need to generate
+% proper function name which we will use
+% @end
+-spec ms_pattern_function(SampleOfIdFromTableOrIdType) -> Result when
+    SampleOfIdFromTableOrIdType :: id() | strict_id() | id_type(),
+    Result :: atom().
+
+ms_pattern_function(strict) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function(unstrict) -> ms_to_id_ms_next_pattern;
+ms_pattern_function({{_MonoTime, _UniqueInteger, _Node}}) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _Node}) -> ms_to_id_ms_next_pattern.
+
+% @doc Generate MatchSpec pattern for unstrict id.
+-spec ms_to_id_ms_next_pattern(MTime) -> Result when
+    MTime   :: mtime(),
+    Result  :: id().
+
+ms_to_id_ms_next_pattern(MTime) ->
+    {
+        ms_to_monotonic(MTime),
+        node()
+    }.
+
+
+% @doc Generate MatchSpec pattern for strict id.
+-spec ms_to_strict_id_ms_next_pattern(MTime) -> Result when
+    MTime   :: mtime(),
+    Result  :: strict_id().
+
+ms_to_strict_id_ms_next_pattern(MTime) ->
+    {{ms_to_monotonic(MTime), ?lowest_bigint}, node()}.
+
+ms_to_monotonic(MTime) ->
+        erlang:convert_time_unit(
+            MTime,
+            milli_seconds,
+            nanosecond
+        ) - erlang:time_offset().
+
 
 % @doc Generate random atom
 -spec random_atom() -> Result when

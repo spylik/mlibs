@@ -5,7 +5,7 @@ PROJECT = teaser
 # --------------------------------------------------------------------
 
 ifneq ($(shell basename $(shell dirname $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))), deps)
-ERLANG_OTP = OTP-22.3
+ERLANG_OTP = OTP-$(shell cat ./.env | grep ERLANG_VERSION | sed -e s/^ERLANG_VERSION=//)
 endif
 
 # --------------------------------------------------------------------
