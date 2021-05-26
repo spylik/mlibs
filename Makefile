@@ -21,7 +21,7 @@ dep_lager = git https://github.com/erlang-lager/lager
 
 SHELL_DEPS = sync lager
 
-ifeq ($(USER),travis)
+ifeq ($(CI),true)
     TEST_DEPS += covertool
     dep_covertool = git https://github.com/idubrov/covertool
 endif
