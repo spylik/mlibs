@@ -7,9 +7,9 @@
 
 -type id_type()     :: strict | unstrict.
 -type strict_id()   :: {integer(), integer(), node()}.
--type unstrict_id() :: {integer(), node()}.
+-type unstrict_id() :: {integer(), integer()}.
 
--type id()          :: strict_id().
+-type id()          :: unstrict_id().
 
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
@@ -132,13 +132,13 @@ id_function(unstrict) -> gen_id.
 -spec gen_id() -> Result when
     Result      :: id().
 
-gen_id() -> gen_strict_id().
+gen_id() -> gen_unstrict_id().
 
 % @doc Generate unique id
 -spec gen_unstrict_id() -> Result when
     Result      :: unstrict_id().
 
-gen_unstrict_id() -> {erlang:monotonic_time(nanosecond), node()}.
+gen_unstrict_id() -> {erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic])}.
 
 % @doc the interface for generate strict id (when we really need it. it's more expensive).
 -spec gen_strict_id() -> Result when
@@ -182,7 +182,7 @@ ms_pattern_function({_MonoTime, _Node}) -> ms_to_unstrict_id_ms_next_pattern.
 ms_to_unstrict_id_ms_next_pattern(MTime) ->
     {
         ms_to_monotonic(MTime),
-        node()
+        ?lowest_bigint
     }.
 
 % @doc Generate MatchSpec pattern for strict id.
