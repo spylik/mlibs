@@ -19,6 +19,8 @@
 
 -export_type([
     id/0,
+    strict_id/0,
+    unstrict_id/0,
     mtime/0
     ]).
 
