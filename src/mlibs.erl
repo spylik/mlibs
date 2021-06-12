@@ -6,7 +6,7 @@
 -include("utils.hrl").
 
 -type id_type()     :: strict | unstrict.
--type strict_id()   :: {{integer(), integer()}, node()}.
+-type strict_id()   :: {integer(), integer(), node()}.
 -type unstrict_id() :: {integer(), node()}.
 
 -type id()          :: strict_id().
@@ -145,7 +145,7 @@ gen_unstrict_id() -> {erlang:monotonic_time(nanosecond), node()}.
       Result      :: strict_id().
 
 gen_strict_id() ->
-    {{erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic])}, node()}.
+    {erlang:monotonic_time(nanosecond), erlang:unique_integer([monotonic]), node()}.
 
 % @doc convert id to mtime
 
@@ -191,7 +191,7 @@ ms_to_unstrict_id_ms_next_pattern(MTime) ->
     Result  :: strict_id().
 
 ms_to_strict_id_ms_next_pattern(MTime) ->
-    {{ms_to_monotonic(MTime), ?lowest_bigint}, node()}.
+    {ms_to_monotonic(MTime), ?lowest_bigint, node()}.
 
 ms_to_monotonic(MTime) ->
         erlang:convert_time_unit(
