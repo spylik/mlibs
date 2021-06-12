@@ -6,8 +6,10 @@
 -include("utils.hrl").
 
 -type id_type()     :: strict | unstrict.
--type id()          :: {integer(), node()}.
 -type strict_id()   :: {{integer(), integer()}, node()}.
+-type unstrict_id() :: {integer(), node()}.
+
+-type id()          :: strict_id().
 
 -type mtime()   :: pos_integer() | 'milli_seconds'.
 
@@ -125,11 +127,16 @@ unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
 id_function(strict) -> gen_strict_id;
 id_function(unstrict) -> gen_id.
 
-% @doc Generate unique id
 -spec gen_id() -> Result when
     Result      :: id().
 
-gen_id() -> {erlang:monotonic_time(nanosecond), node()}.
+gen_id() -> gen_strict_id().
+
+% @doc Generate unique id
+-spec gen_unstrict_id() -> Result when
+    Result      :: unstrict_id().
+
+gen_unstrict_id() -> {erlang:monotonic_time(nanosecond), node()}.
 
 % @doc the interface for generate strict id (when we really need it. it's more expensive).
 -spec gen_strict_id() -> Result when
@@ -141,7 +148,7 @@ gen_strict_id() ->
 % @doc convert id to mtime
 
 -spec id_to_ms(IdOrStrictId) -> Result when
-    IdOrStrictId    :: id() | strict_id(),
+    IdOrStrictId    :: unstrict_id() | strict_id(),
     Result          :: mtime().
 
 id_to_ms({{MonoTime, _UniqueInteger}, Node}) -> id_to_ms({MonoTime, Node});
@@ -157,20 +164,20 @@ id_to_ms({MonoTime, _Node}) ->
 % proper function name which we will use
 % @end
 -spec ms_pattern_function(SampleOfIdFromTableOrIdType) -> Result when
-    SampleOfIdFromTableOrIdType :: id() | strict_id() | id_type(),
+    SampleOfIdFromTableOrIdType :: unstrict_id() | strict_id() | id_type(),
     Result :: atom().
 
 ms_pattern_function(strict) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function(unstrict) -> ms_to_id_ms_next_pattern;
-ms_pattern_function({{_MonoTime, _UniqueInteger, _Node}}) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _Node}) -> ms_to_id_ms_next_pattern.
+ms_pattern_function(unstrict) -> ms_to_unstrict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _Node}) -> ms_to_unstrict_id_ms_next_pattern.
 
 % @doc Generate MatchSpec pattern for unstrict id.
--spec ms_to_id_ms_next_pattern(MTime) -> Result when
+-spec ms_to_unstrict_id_ms_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
-    Result  :: id().
+    Result  :: unstrict_id().
 
-ms_to_id_ms_next_pattern(MTime) ->
+ms_to_unstrict_id_ms_next_pattern(MTime) ->
     {
         ms_to_monotonic(MTime),
         node()
