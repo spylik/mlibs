@@ -37,6 +37,7 @@ autocmd FileType asciidoc setlocal expandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
 autocmd FileType elixir setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType sh setlocal ts=2 sts=2 sw=2 expandtab
 
 autocmd BufWritePre *.ex %s/\s\+$//e
 autocmd BufWritePre *.eex %s/\s\+$//e
@@ -46,6 +47,7 @@ autocmd BufWritePre *.exs %s/\s\+$//e
 autocmd BufWritePre *.erl %s/\s\+$//e
 autocmd BufWritePre *.hrl %s/\s\+$//e
 autocmd BufWritePre Makefile %s/\s\+$//e
+autocmd BufWritePre *.sh %s/\s\+$//e
 
 "autocmd BufWritePost *.exs silent :!mix format %
 "autocmd BufWritePost *.ex silent :!mix format %
