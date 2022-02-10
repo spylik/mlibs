@@ -90,8 +90,8 @@ if (-r $HOME/bin/rbenvWrap) then
 	eval `rbenvWrap init -`
 endif
 
-setenv PATH /usr/local/opt/openssl@1.1/bin:$PATH
-setenv LDFLAGS -L/usr/local/opt/openssl@1.1/lib
-setenv CPPFLAGS -I/usr/local/opt/openssl@1.1/include
+#setenv PATH /opt/homebrew/opt/openssl@1.1/bin:$PATH
+#setenv LDFLAGS -L/opt/homebrew/opt/openssl@1.1/lib
+#setenv CPPFLAGS -I/opt/homebrew/opt/openssl@1.1/include
 
 #setenv PATH /usr/local/opt/terraform@0.12/bin:$PATH
