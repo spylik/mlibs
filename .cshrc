@@ -36,10 +36,10 @@ setenv PATH /usr/local/opt/icu4c/sbin:$PATH
 setenv OBJC_DISABLE_INITIALIZE_FORK_SAFETY "YES"
 
 #docker stuff
-setenv DOCKER_TLS_VERIFY "1"
-setenv DOCKER_HOST "tcp://192.168.99.104:2376"
-setenv DOCKER_CERT_PATH "/Users/spyl/.docker/machine/machines/default"
-setenv DOCKER_MACHINE_NAME "default"
+#setenv DOCKER_TLS_VERIFY "1"
+#setenv DOCKER_HOST "tcp://192.168.99.104:2376"
+#setenv DOCKER_CERT_PATH "/Users/spyl/.docker/machine/machines/default"
+#setenv DOCKER_MACHINE_NAME "default"
 
 set color
 setenv	EDITOR	vim
@@ -90,6 +90,11 @@ if (-r $HOME/bin/rbenvWrap) then
 	eval `rbenvWrap init -`
 endif
 
+setenv PATH /opt/homebrew/opt/make/libexec/gnubin:$PATH
+setenv PATH /opt/homebrew/opt/openssl@3/bin:$PATH
+setenv PATH /opt/homebrew/opt/node@14/bin:$PATH
+
+#setenv PATH /opt/homebrew/opt/python@3.9/libexec/bin:$PATH
 #setenv PATH /opt/homebrew/opt/openssl@1.1/bin:$PATH
 #setenv LDFLAGS -L/opt/homebrew/opt/openssl@1.1/lib
 #setenv CPPFLAGS -I/opt/homebrew/opt/openssl@1.1/include

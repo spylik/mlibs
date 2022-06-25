@@ -153,8 +153,8 @@ gen_strict_id() ->
     IdOrStrictId    :: unstrict_id() | strict_id(),
     Result          :: mtime().
 
-id_to_ms({{MonoTime, _UniqueInteger}, Node}) -> id_to_ms({MonoTime, Node});
-id_to_ms({MonoTime, _Node}) ->
+id_to_ms({MonoTime, UniqueInteger, _Node}) -> id_to_ms({MonoTime, UniqueInteger});
+id_to_ms({MonoTime, _UniqueInteger}) ->
     erlang:convert_time_unit(
         MonoTime + erlang:time_offset(),
         nanosecond,
