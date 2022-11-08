@@ -20,9 +20,7 @@ ifeq ($(shell basename $(shell dirname $(shell dirname $(realpath $(lastword $(M
     DEPS_DIR ?= $(shell dirname $(CURDIR))
 endif
 
-dep_lager = git https://github.com/erlang-lager/lager
-
-SHELL_DEPS = sync lager
+SHELL_DEPS = sync
 
 ifdef CI
     TEST_DEPS += covertool
