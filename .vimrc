@@ -22,6 +22,7 @@ Plugin 'othree/html5.vim'
 Plugin 'elixir-lang/vim-elixir'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'elmcast/elm-vim'
+Plugin 'vim-erlang/vim-erlang-runtime'
 "Plugin 'w0rp/ale' 				# vim8+ or neovim
 call vundle#end()
 filetype plugin indent on

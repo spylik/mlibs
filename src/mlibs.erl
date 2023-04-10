@@ -15,7 +15,8 @@
 
 -define(epoch, 62167219200).
 -define(dec282016ms, 1482924639084).
--define(lowest_bigint, -9223372036854775808).
+-define(biggest_bigint, 9223372036854775808).
+-define(lowest_bigint, -?biggest_bigint).
 
 -export_type([
     id/0,
@@ -23,6 +24,16 @@
     unstrict_id/0,
     mtime/0
     ]).
+
+-spec biggest_bigint() -> Result when
+      Result :: pos_integer().
+
+biggest_bigint() -> ?biggest_bigint.
+
+-spec lowest_bigint() -> Result when
+      Result :: neg_integer().
+
+lowest_bigint() -> ?lowest_bigint.
 
 
 % @doc Get current system POSIX time in milli_seconds (unix timestamp in milliseconds)
@@ -163,18 +174,33 @@ id_to_ms({MonoTime, _UniqueInteger}) ->
 
 % @doc
 % Because for different scenarious we may require just id() but for some strict_id() we need to generate
-% proper function name which we will use
+% proper function name which we will use for prev/next.
+% By default we generating for "next" as it's most common scenario when we traversing events from
+% the past to the future
 % @end
+
 -spec ms_pattern_function(SampleOfIdFromTableOrIdType) -> Result when
     SampleOfIdFromTableOrIdType :: unstrict_id() | strict_id() | id_type(),
     Result :: atom().
 
-ms_pattern_function(strict) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function(unstrict) -> ms_to_unstrict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _Node}) -> ms_to_unstrict_id_ms_next_pattern.
+ms_pattern_function(SampleOfIdFromTableOrIdType) -> ms_pattern_function(SampleOfIdFromTableOrIdType, next).
 
-% @doc Generate MatchSpec pattern for unstrict id.
+-spec ms_pattern_function(SampleOfIdFromTableOrIdType, DirectionType) -> Result when
+    SampleOfIdFromTableOrIdType :: unstrict_id() | strict_id() | id_type(),
+    DirectionType :: next | prev,
+    Result :: atom().
+
+ms_pattern_function(strict, next) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function(unstrict, next) -> ms_to_unstrict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _Node}, next) -> ms_to_unstrict_id_ms_next_pattern;
+
+ms_pattern_function(strict, prev) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function(unstrict, prev) -> ms_to_unstrict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _Node}, prev) -> ms_to_unstrict_id_ms_prev_pattern.
+
+% @doc Generate MatchSpec pattern for unstrict id (NEXT).
 -spec ms_to_unstrict_id_ms_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: unstrict_id().
@@ -185,13 +211,35 @@ ms_to_unstrict_id_ms_next_pattern(MTime) ->
         ?lowest_bigint
     }.
 
-% @doc Generate MatchSpec pattern for strict id.
+% @doc Generate MatchSpec pattern for strict id (NEXT).
 -spec ms_to_strict_id_ms_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: strict_id().
 
+
+% ==== prev ===
+
 ms_to_strict_id_ms_next_pattern(MTime) ->
     {ms_to_monotonic(MTime), ?lowest_bigint, node()}.
+
+% @doc Generate MatchSpec pattern for unstrict id (PREV).
+-spec ms_to_unstrict_id_ms_prev_pattern(MTime) -> Result when
+    MTime   :: mtime(),
+    Result  :: unstrict_id().
+
+ms_to_unstrict_id_ms_prev_pattern(MTime) ->
+    {
+        ms_to_monotonic(MTime),
+        ?biggest_bigint
+    }.
+
+% @doc Generate MatchSpec pattern for strict id (PREV).
+-spec ms_to_strict_id_ms_prev_pattern(MTime) -> Result when
+    MTime   :: mtime(),
+    Result  :: strict_id().
+
+ms_to_strict_id_ms_prev_pattern(MTime) ->
+    {ms_to_monotonic(MTime), ?biggest_bigint, node()}.
 
 ms_to_monotonic(MTime) ->
         erlang:convert_time_unit(
