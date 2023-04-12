@@ -17,6 +17,7 @@
 -define(dec282016ms, 1482924639084).
 -define(biggest_bigint, 9223372036854775808).
 -define(lowest_bigint, -?biggest_bigint).
+-define(nanoseconds_in_ms, 1000000).
 
 -export_type([
     id/0,
@@ -167,10 +168,10 @@ gen_strict_id() ->
 id_to_ms({MonoTime, UniqueInteger, _Node}) -> id_to_ms({MonoTime, UniqueInteger});
 id_to_ms({MonoTime, _UniqueInteger}) ->
     erlang:convert_time_unit(
-        MonoTime + erlang:time_offset(),
+        MonoTime,
         nanosecond,
         milli_seconds
-     ).
+    ) + erlang:time_offset(milli_seconds).
 
 % @doc
 % Because for different scenarious we may require just id() but for some strict_id() we need to generate
@@ -268,9 +269,9 @@ ms_to_strict_id_ms_prev_pattern(MTime) ->
 ms_to_monotonic(MTime) ->
         erlang:convert_time_unit(
             MTime,
-            milli_seconds,
+            milli_seconds - erlang:time_offset(milli_seconds),
             nanosecond
-        ) - erlang:time_offset().
+        ).
 
 
 % @doc Generate random atom
