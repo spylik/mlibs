@@ -18,6 +18,7 @@
 -define(biggest_bigint, 9223372036854775808).
 -define(lowest_bigint, -?biggest_bigint).
 -define(nanoseconds_in_ms, 1000000).
+-define(last_nanosecond_in_ms, ?nanoseconds_in_ms - 1).
 
 -export_type([
     id/0,
@@ -254,7 +255,7 @@ ms_to_strict_id_ms_next_pattern(MTime) ->
 
 ms_to_unstrict_id_ms_prev_pattern(MTime) ->
     {
-        ms_to_monotonic(MTime),
+        ms_to_monotonic(MTime) + ?last_nanosecond_in_ms,
         ?biggest_bigint
     }.
 
@@ -264,7 +265,7 @@ ms_to_unstrict_id_ms_prev_pattern(MTime) ->
     Result  :: strict_id().
 
 ms_to_strict_id_ms_prev_pattern(MTime) ->
-    {ms_to_monotonic(MTime), ?biggest_bigint, node()}.
+    {ms_to_monotonic(MTime) + ?last_nanosecond_in_ms, ?biggest_bigint, node()}.
 
 ms_to_monotonic(MTime) ->
         erlang:convert_time_unit(
