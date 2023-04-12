@@ -268,8 +268,8 @@ ms_to_strict_id_ms_prev_pattern(MTime) ->
 
 ms_to_monotonic(MTime) ->
         erlang:convert_time_unit(
-            MTime,
-            milli_seconds - erlang:time_offset(milli_seconds),
+            MTime - erlang:time_offset(milli_seconds),
+            milli_seconds,
             nanosecond
         ).
 
