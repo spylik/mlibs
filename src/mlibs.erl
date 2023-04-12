@@ -190,15 +190,40 @@ ms_pattern_function(SampleOfIdFromTableOrIdType) -> ms_pattern_function(SampleOf
     DirectionType :: next | prev,
     Result :: atom().
 
-ms_pattern_function(strict, next) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function(unstrict, next) -> ms_to_unstrict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _Node}, next) -> ms_to_unstrict_id_ms_next_pattern;
+% @doc
+% Sometimes during traversing tables we will want to include that timestamp into result and sometimes exclude (equal_to
+% or greater_than / smaller_than).
+% By default we including.
+% @end
 
-ms_pattern_function(strict, prev) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function(unstrict, prev) -> ms_to_unstrict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _Node}, prev) -> ms_to_unstrict_id_ms_prev_pattern.
+ms_pattern_function(SampleOfIdFromTableOrIdType, DirectionType) -> ms_pattern_function(SampleOfIdFromTableOrIdType, DirectionType, true).
+
+-spec ms_pattern_function(SampleOfIdFromTableOrIdType, DirectionType, Included) -> Result when
+    SampleOfIdFromTableOrIdType :: unstrict_id() | strict_id() | id_type(),
+    DirectionType :: next | prev,
+    Included      :: boolean(),
+    Result :: atom().
+
+ms_pattern_function(strict, next, true) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function(unstrict, next, true) -> ms_to_unstrict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, true) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _Node}, next, true) -> ms_to_unstrict_id_ms_next_pattern;
+
+ms_pattern_function(strict, next, false) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function(unstrict, next, false) -> ms_to_unstrict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, false) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _Node}, next, false) -> ms_to_unstrict_id_ms_prev_pattern;
+
+ms_pattern_function(strict, prev, true) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function(unstrict, prev, true) -> ms_to_unstrict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, true) -> ms_to_strict_id_ms_prev_pattern;
+ms_pattern_function({_MonoTime, _Node}, prev, true) -> ms_to_unstrict_id_ms_prev_pattern;
+
+ms_pattern_function(strict, prev, false) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function(unstrict, prev, false) -> ms_to_unstrict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, false) -> ms_to_strict_id_ms_next_pattern;
+ms_pattern_function({_MonoTime, _Node}, prev, false) -> ms_to_unstrict_id_ms_next_pattern.
+
 
 % @doc Generate MatchSpec pattern for unstrict id (NEXT).
 -spec ms_to_unstrict_id_ms_next_pattern(MTime) -> Result when
@@ -216,11 +241,10 @@ ms_to_unstrict_id_ms_next_pattern(MTime) ->
     MTime   :: mtime(),
     Result  :: strict_id().
 
-
-% ==== prev ===
-
 ms_to_strict_id_ms_next_pattern(MTime) ->
     {ms_to_monotonic(MTime), ?lowest_bigint, node()}.
+
+% ==== prev ===
 
 % @doc Generate MatchSpec pattern for unstrict id (PREV).
 -spec ms_to_unstrict_id_ms_prev_pattern(MTime) -> Result when
