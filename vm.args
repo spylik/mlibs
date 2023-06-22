@@ -1,1 +1,5 @@
 -config sys.config
++c true
++C multi_time_warp
+-smp enable
+-mode interactive

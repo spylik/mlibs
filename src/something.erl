@@ -22,7 +22,9 @@
 
     to_binary/1,
 
-    to_boolean/1
+    to_boolean/1,
+
+    to_mlibs_id/1
     ]).
 
 -include("utils.hrl").
@@ -302,3 +304,51 @@ to_boolean(0.0) -> false;
 to_boolean(false) -> false.
 
 %-------------- end of convert anything to boolean--------------
+
+% ============ try to convert something to mlibs_id ============
+
+-spec to_mlibs_id(Data) -> Result
+    when Data :: binary() | nonempty_list() | mlibs:id(),
+         Result :: mlibs:id().
+
+to_mlibs_id({TSAsBinary, UNAsBinary} = ShortID) when
+      is_integer(TSAsBinary)
+        andalso
+      is_integer(UNAsBinary)
+    -> ShortID;
+
+to_mlibs_id({TSAsBinary, UNAsBinary, NodeName} = LongID) when
+      is_integer(TSAsBinary)
+        andalso
+      is_integer(UNAsBinary)
+        andalso
+      is_atom(NodeName)
+    -> LongID;
+
+to_mlibs_id(Data) when is_binary(Data) ->
+    case binary:split(
+        binary:replace(
+            binary:replace(
+                Data,
+                <<"{">>,
+                <<>>
+            ),
+            <<"}">>,
+            <<>>
+        ),
+        <<",">>,
+        [global]
+    ) of
+    [TSAsBinary, UNAsBinary] ->
+        {something:to_integer(TSAsBinary), something:to_integer(UNAsBinary)};
+    [TSAsBinary, UNAsBinary, NodeAsBinary] ->
+        {
+            something:to_integer(TSAsBinary),
+            something:to_integer(UNAsBinary),
+            binary_to_existing_atom(NodeAsBinary, utf8)
+        }
+    end;
+
+to_mlibs_id(Data) when is_list(Data) -> to_mlibs_id(something:to_binary(Data)).
+
+% --------- end of try to convert something to mlibs_id --------
