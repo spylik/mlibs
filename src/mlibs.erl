@@ -5,20 +5,17 @@
 
 -include("utils.hrl").
 
+-define(epoch, 62167219200).
+-define(biggest_bigint, 9223372036854775808).
+-define(lowest_bigint, -?biggest_bigint).
+
 -type id_type()     :: strict | unstrict.
 -type strict_id()   :: {integer(), integer(), node()}.
 -type unstrict_id() :: {integer(), integer()}.
 
 -type id()          :: unstrict_id().
 
--type mtime()   :: pos_integer() | 'milli_seconds'.
-
--define(epoch, 62167219200).
--define(dec282016ms, 1482924639084).
--define(biggest_bigint, 9223372036854775808).
--define(lowest_bigint, -?biggest_bigint).
--define(nanoseconds_in_ms, 1000000).
--define(last_nanosecond_in_ms, ?nanoseconds_in_ms - 1).
+-type mtime()   :: 1696387175273909454..?biggest_bigint.
 
 -export_type([
     id/0,
@@ -37,32 +34,30 @@ biggest_bigint() -> ?biggest_bigint.
 
 lowest_bigint() -> ?lowest_bigint.
 
-
-% @doc Get current system POSIX time in milli_seconds (unix timestamp in milliseconds)
+% @doc Get current system POSIX time in nanoseconds (unix timestamp in nanoseconds)
 % the POSIX means it's since ?epoch and in GMT
 -spec get_time() -> Result when
     Result      :: mtime().
 
-get_time() ->
-    erlang:system_time(milli_seconds).
+get_time() -> erlang:system_time(nanosecond).
 
-% @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in millisecond)
--spec http_time_to_unix_time_ms(DateTime) -> Result when
+% @doc Convert http request_date to mlibs:get_time/0 format (unix timestamp in nanoseconds)
+-spec http_time_to_mtime(DateTime) -> Result when
     DateTime    :: nonempty_list() | binary(),
     Result      :: mtime().
 
-http_time_to_unix_time_ms(DateTime) when is_binary(DateTime) ->
-    http_time_to_unix_time_ms(binary_to_list(DateTime));
+http_time_to_mtime(DateTime) when is_binary(DateTime) ->
+    http_time_to_mtime(binary_to_list(DateTime));
 
-http_time_to_unix_time_ms(DateTime) when is_list(DateTime) ->
+http_time_to_mtime(DateTime) when is_list(DateTime) ->
     erlang:convert_time_unit(
         calendar:datetime_to_gregorian_seconds(httpd_util:convert_request_date(DateTime)) - ?epoch,
-        seconds, milli_seconds
+        second, nanosecond
     ).
 
 % @doc
-% Time <<"2017-07-13 14:45:47">> to ms 63667176347000
-% Time <<"2017-07-13 14:45:47.588011">> to ms 63667176347588
+% Time <<"2023-10-04 03:30:00">> to nanoseconds 1696390200000000000
+% Time <<"2023-10-04 03:30:00.000000">> to nanoseconds 1696390200000000000
 -spec datetime_to_ms(DateTime) -> Result when
     DateTime    :: list() | binary(),
     Result      :: mtime().
@@ -87,7 +82,7 @@ datetime_to_ms(<<
                 {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
             }
         ) - ?epoch,
-        seconds, milli_seconds
+        second, nanosecond
     );
 datetime_to_ms(<<
     Y:4/binary,
@@ -102,8 +97,7 @@ datetime_to_ms(<<
     $:,
     Sec:2/binary,
     $.,
-    MilliSeconds:3/binary,
-    _MicroSecconds:3/binary
+    MicroSeconds:6/binary
     >>
 ) -> erlang:convert_time_unit(
         calendar:datetime_to_gregorian_seconds(
@@ -112,28 +106,28 @@ datetime_to_ms(<<
                 {binary_to_integer(Hrs), binary_to_integer(Min), binary_to_integer(Sec)}
             }
         ) - ?epoch,
-        seconds, milli_seconds
-    ) + binary_to_integer(MilliSeconds).
+        second, nanosecond
+    ) + binary_to_integer(MicroSeconds) * 1000.
 
-% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in millisecond)
--spec unixtimestamp_to_ms(DateTime) -> Result when
-    DateTime    :: integer() | binary() | 'seconds',
+% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp in nanoseconds)
+-spec unixtimestamp_to_mtime(DateTime) -> Result when
+    DateTime    :: integer() | binary(),
     Result      :: mtime().
 
-unixtimestamp_to_ms(DateTime) when is_binary(DateTime) ->
-    unixtimestamp_to_ms(binary_to_integer(DateTime));
-unixtimestamp_to_ms(DateTime) when is_integer(DateTime) ->
-    erlang:convert_time_unit(DateTime, seconds, milli_seconds).
+unixtimestamp_to_mtime(DateTime) when is_binary(DateTime) ->
+    unixtimestamp_to_mtime(binary_to_integer(DateTime));
+unixtimestamp_to_mtime(DateTime) when is_integer(DateTime) ->
+    erlang:convert_time_unit(DateTime, second, nanosecond).
 
-% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp micro in millisecond)
--spec unixtimestamp_micro_to_ms(DateTime) -> Result when
-    DateTime    :: integer() | binary() | 'seconds',
+% @doc Convert unixtimestamp to mlibs:get_time/0 format (unix timestamp micro in nanoseconds)
+-spec unixtimestamp_micro_to_mtime(DateTime) -> Result when
+    DateTime    :: integer() | binary(),
     Result      :: mtime().
 
-unixtimestamp_micro_to_ms(DateTime) when is_binary(DateTime) ->
-    unixtimestamp_micro_to_ms(binary_to_integer(DateTime));
-unixtimestamp_micro_to_ms(DateTime) when is_integer(DateTime) ->
-    erlang:convert_time_unit(DateTime, micro_seconds, milli_seconds).
+unixtimestamp_micro_to_mtime(DateTime) when is_binary(DateTime) ->
+    unixtimestamp_micro_to_mtime(binary_to_integer(DateTime));
+unixtimestamp_micro_to_mtime(DateTime) when is_integer(DateTime) ->
+    erlang:convert_time_unit(DateTime, microsecond, nanosecond).
 
 -spec id_function(IdType) -> Result when
     IdType  :: id_type(),
@@ -162,17 +156,12 @@ gen_strict_id() ->
 
 % @doc convert id to mtime
 
--spec id_to_ms(IdOrStrictId) -> Result when
+-spec id_to_mtime(IdOrStrictId) -> Result when
     IdOrStrictId    :: unstrict_id() | strict_id(),
     Result          :: mtime().
 
-id_to_ms({MonoTime, UniqueInteger, _Node}) -> id_to_ms({MonoTime, UniqueInteger});
-id_to_ms({MonoTime, _UniqueInteger}) ->
-    erlang:convert_time_unit(
-        MonoTime,
-        nanosecond,
-        milli_seconds
-    ) + erlang:time_offset(milli_seconds).
+id_to_mtime({MonoTime, UniqueInteger, _Node}) -> id_to_mtime({MonoTime, UniqueInteger});
+id_to_mtime({MonoTime, _UniqueInteger}) -> MonoTime + erlang:time_offset(nanosecond).
 
 % @doc
 % Because for different scenarious we may require just id() but for some strict_id() we need to generate
@@ -206,74 +195,59 @@ ms_pattern_function(SampleOfIdFromTableOrIdType, DirectionType) -> ms_pattern_fu
     Included      :: boolean(),
     Result :: atom().
 
-ms_pattern_function(strict, next, true) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function(unstrict, next, true) -> ms_to_unstrict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, true) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _Node}, next, true) -> ms_to_unstrict_id_ms_next_pattern;
+ms_pattern_function(strict, next, true) -> mtime_to_strict_id_next_pattern;
+ms_pattern_function(unstrict, next, true) -> mtime_to_unstrict_id_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, true) -> mtime_to_strict_id_next_pattern;
+ms_pattern_function({_MonoTime, _Node}, next, true) -> mtime_to_unstrict_id_next_pattern;
 
-ms_pattern_function(strict, next, false) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function(unstrict, next, false) -> ms_to_unstrict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, false) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _Node}, next, false) -> ms_to_unstrict_id_ms_prev_pattern;
+ms_pattern_function(strict, next, false) -> mtime_to_strict_id_prev_pattern;
+ms_pattern_function(unstrict, next, false) -> mtime_to_unstrict_id_prev_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, next, false) -> mtime_to_strict_id_prev_pattern;
+ms_pattern_function({_MonoTime, _Node}, next, false) -> mtime_to_unstrict_id_prev_pattern;
 
-ms_pattern_function(strict, prev, true) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function(unstrict, prev, true) -> ms_to_unstrict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, true) -> ms_to_strict_id_ms_prev_pattern;
-ms_pattern_function({_MonoTime, _Node}, prev, true) -> ms_to_unstrict_id_ms_prev_pattern;
+ms_pattern_function(strict, prev, true) -> mtime_to_strict_id_prev_pattern;
+ms_pattern_function(unstrict, prev, true) -> mtime_to_unstrict_id_prev_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, true) -> mtime_to_strict_id_prev_pattern;
+ms_pattern_function({_MonoTime, _Node}, prev, true) -> mtime_to_unstrict_id_prev_pattern;
 
-ms_pattern_function(strict, prev, false) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function(unstrict, prev, false) -> ms_to_unstrict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, false) -> ms_to_strict_id_ms_next_pattern;
-ms_pattern_function({_MonoTime, _Node}, prev, false) -> ms_to_unstrict_id_ms_next_pattern.
+ms_pattern_function(strict, prev, false) -> mtime_to_strict_id_next_pattern;
+ms_pattern_function(unstrict, prev, false) -> mtime_to_unstrict_id_next_pattern;
+ms_pattern_function({_MonoTime, _UniqueInteger, _Node}, prev, false) -> mtime_to_strict_id_next_pattern;
+ms_pattern_function({_MonoTime, _Node}, prev, false) -> mtime_to_unstrict_id_next_pattern.
 
 
 % @doc Generate MatchSpec pattern for unstrict id (NEXT).
--spec ms_to_unstrict_id_ms_next_pattern(MTime) -> Result when
+-spec mtime_to_unstrict_id_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: unstrict_id().
 
-ms_to_unstrict_id_ms_next_pattern(MTime) ->
-    {
-        ms_to_monotonic(MTime),
-        ?lowest_bigint
-    }.
+mtime_to_unstrict_id_next_pattern(MTime) -> {mtime_to_monotonic(MTime), ?lowest_bigint}.
 
 % @doc Generate MatchSpec pattern for strict id (NEXT).
--spec ms_to_strict_id_ms_next_pattern(MTime) -> Result when
+-spec mtime_to_strict_id_next_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: strict_id().
 
-ms_to_strict_id_ms_next_pattern(MTime) ->
-    {ms_to_monotonic(MTime), ?lowest_bigint, node()}.
+mtime_to_strict_id_next_pattern(MTime) ->
+    {mtime_to_monotonic(MTime), ?lowest_bigint, node()}.
 
 % ==== prev ===
 
 % @doc Generate MatchSpec pattern for unstrict id (PREV).
--spec ms_to_unstrict_id_ms_prev_pattern(MTime) -> Result when
+-spec mtime_to_unstrict_id_prev_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: unstrict_id().
 
-ms_to_unstrict_id_ms_prev_pattern(MTime) ->
-    {
-        ms_to_monotonic(MTime) + ?last_nanosecond_in_ms,
-        ?biggest_bigint
-    }.
+mtime_to_unstrict_id_prev_pattern(MTime) -> {mtime_to_monotonic(MTime), ?biggest_bigint}.
 
 % @doc Generate MatchSpec pattern for strict id (PREV).
--spec ms_to_strict_id_ms_prev_pattern(MTime) -> Result when
+-spec mtime_to_strict_id_prev_pattern(MTime) -> Result when
     MTime   :: mtime(),
     Result  :: strict_id().
 
-ms_to_strict_id_ms_prev_pattern(MTime) ->
-    {ms_to_monotonic(MTime) + ?last_nanosecond_in_ms, ?biggest_bigint, node()}.
+mtime_to_strict_id_prev_pattern(MTime) -> {MTime, ?biggest_bigint, node()}.
 
-ms_to_monotonic(MTime) ->
-        erlang:convert_time_unit(
-            MTime - erlang:time_offset(milli_seconds),
-            milli_seconds,
-            nanosecond
-        ).
-
+mtime_to_monotonic(MTime) -> MTime - erlang:time_offset(nanosecond).
 
 % @doc Generate random atom
 -spec random_atom() -> Result when
@@ -402,25 +376,6 @@ discover() ->
             );
         _ -> ok
     end || Dir <- ["src/","test/"]].
-
-% @doc disable lager output to console
-dclog() ->
-    lager:set_loglevel(lager_console_backend, critical).
-
-% @doc enable lager output to console
-eclog() ->
-    GetConfig = fun() ->
-        {ok, Data} = application:get_env(lager, handlers),
-        {lager_console_backend, Value} = lists:keyfind(lager_console_backend,1,Data),
-        Value
-    end,
-
-    try GetConfig() of
-        Value -> elog(Value)
-    catch _:_ ->
-        elog(info)
-    end.
-elog(LogLevel) -> lager:set_loglevel(lager_console_backend, LogLevel).
 
 % @doc http://stackoverflow.com/questions/13480462/erlang-can-i-get-a-list-of-all-currently-registered-atoms
 atom_by_number(N) ->
