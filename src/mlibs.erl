@@ -18,17 +18,28 @@
 
 -type mtime()   :: 1696387175273909454..?biggest_bigint.
 
+-type time_pointer() :: {erlang:time_unit(), pos_integer()}.
+
 -export_type([
     id/0,
     strict_id/0,
     unstrict_id/0,
-    mtime/0
+    mtime/0,
+    time_pointer/0
     ]).
 
 -spec mtime_unit() -> Result when
     Result  :: erlang:time_unit().
 
 mtime_unit() -> ?mtime_unit.
+
+-spec convert_time_pointer(TimePointer, TargetUnit) -> Result when
+    TimePointer :: time_pointer(),
+    TargetUnit  :: erlang:time_unit(),
+    Result      :: pos_integer().
+
+convert_time_pointer({TimeUnit, Time}, TargetUnit) ->
+    erlang:convert_time_unit(Time, TimeUnit, TargetUnit).
 
 -spec biggest_bigint() -> Result when
       Result :: pos_integer().
