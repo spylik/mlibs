@@ -6,6 +6,32 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+% @doc Sync posthook for autotesting while development
+autotest_on_compile() ->
+    ok = sync:start(),
+    RunTests = fun(Mods) ->
+        _ = [Mod:test() || Mod <- Mods,
+            erlang:function_exported(Mod, test, 0)
+        ],
+        [eunit:test(Mod, [verbose, {report,{eunit_surefire,[{dir,"./log"}]}}]) || Mod <- Mods]
+    end,
+    sync:onsync(RunTests).
+
+etests() -> autotest_on_compile().
+dtests() -> sync:onsync(undefined).
+
+% @doc discover modules and tests
+discover() ->
+    [case filelib:ensure_dir(Dir) of
+        ok ->
+            lists:map(fun(Module) ->
+                    code:ensure_loaded(list_to_atom(lists:takewhile(fun(X) -> X /= $. end, lists:subtract(Module,Dir))))
+                end,
+                filelib:wildcard(Dir++"*.erl")
+            );
+        _ -> ok
+    end || Dir <- ["src/","test/"]].
+
 -spec batch_receiver_and_loop() -> Result when
     Result      :: {ReceiverPid, WorkerPid},
     ReceiverPid :: pid(),
