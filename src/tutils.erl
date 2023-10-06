@@ -6,6 +6,51 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+
+% @doc Generate random atom
+-spec random_atom() -> Result when
+    Result  :: atom().
+
+random_atom() ->
+    list_to_atom(erlang:ref_to_list(make_ref())).
+
+-spec random_atom(Length) -> Result when
+    Length  :: pos_integer(),
+    Result  :: atom().
+
+random_atom(Length) ->
+    list_to_atom(random_string(Length, "abcdefghijklmnopqrstuvwxyz1234567890")).
+
+-spec random_string(Length, AllowedChars) -> Result when
+    Length          :: pos_integer(),
+    AllowedChars    :: list(),
+    Result          :: list().
+
+random_string(Length, AllowedChars) ->
+    lists:foldl(fun(_, Acc) ->
+                        [lists:nth(rand:uniform(length(AllowedChars)),
+                                   AllowedChars)]
+                            ++ Acc
+                end, [], lists:seq(1, Length)).
+
+% @doc wait_for
+wait_for(Msg) ->
+    wait_for(Msg, 1000).
+
+wait_for(Msg, Timeout) ->
+    ?info(Msg),
+    timer:sleep(Timeout).
+
+wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts, ReturnInCaseOfFail) when MaxAttempts > 0 ->
+    case erlang:apply(Function, Arguments) of
+        Expectation ->
+            Expectation;
+        _Other ->
+            timer:sleep(Timeout),
+            wait_for(Function, Arguments, Expectation, Timeout, MaxAttempts-1, ReturnInCaseOfFail)
+    end;
+wait_for(_Function, _Arguments, _Expectation, _Timeout, _MaxAttempts, ReturnInCaseOfFail) -> ReturnInCaseOfFail.
+
 % @doc Sync posthook for autotesting while development
 autotest_on_compile() ->
     ok = sync:start(),
