@@ -24,7 +24,9 @@
 
     to_boolean/1,
 
-    to_mlibs_id/1
+    to_mlibs_id/1,
+
+    to_known_atom/1
     ]).
 
 -include("utils.hrl").
@@ -350,5 +352,12 @@ to_mlibs_id(Data) when is_binary(Data) ->
     end;
 
 to_mlibs_id(Data) when is_list(Data) -> to_mlibs_id(something:to_binary(Data)).
+
+-spec to_known_atom(Input) -> Result when
+    Input   :: binary() | atom(),
+    Result  :: atom().
+
+to_known_atom(Input) when is_atom(Input) -> Input;
+to_known_atom(Input) -> erlang:binary_to_existing_atom(string:lowercase(Input), utf8).
 
 % --------- end of try to convert something to mlibs_id --------
