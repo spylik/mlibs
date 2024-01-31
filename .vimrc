@@ -31,7 +31,7 @@ filetype plugin indent on
 " Setting per FileType
 " ==================
 autocmd FileType text setlocal textwidth=78
-autocmd FileType erlang setlocal expandtab ts=4 sts=4 sw=4
+autocmd FileType erlang setlocal expandtab ts=4 sts=4 sw=4 textwidth=0 wrapmargin=0
 autocmd FileType java setlocal expandtab
 autocmd FileType nix setlocal expandtab
 autocmd FileType asciidoc setlocal expandtab

@@ -299,10 +299,18 @@ to_boolean(true) -> true;
 
 to_boolean(<<"0">>) -> false;
 to_boolean(<<"0.0">>) -> false;
+to_boolean(<<"+0">>) -> false;
+to_boolean(<<"+0.0">>) -> false;
+to_boolean(<<"-0">>) -> false;
+to_boolean(<<"-0.0">>) -> false;
 to_boolean("0") -> false;
 to_boolean("0.0") -> false;
+to_boolean("+0") -> false;
+to_boolean("+0.0") -> false;
+to_boolean("-0") -> false;
+to_boolean("-0.0") -> false;
 to_boolean(0) -> false;
-to_boolean(0.0) -> false;
+to_boolean(+0.0) -> false;
 to_boolean(false) -> false.
 
 %-------------- end of convert anything to boolean--------------
