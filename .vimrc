@@ -1,5 +1,6 @@
 set nocompatible
 syntax sync ccomment
+
 colorscheme elflord
 
 " ==================
@@ -119,3 +120,15 @@ set termencoding=utf-8
 if &t_Co > 2 || has("gui_running")
   syntax on
 endif
+
+"Copilot settings"
+
+let g:copilot_enabled = 0
+"Option-[
+inoremap “ <Plug>(copilot-previous)
+"Option-]
+inoremap ‘ <Plug>(copilot-next)
+"Option-\
+inoremap « <Plug>(copilot-dismiss)
+
+
