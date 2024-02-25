@@ -12,14 +12,25 @@
     Result  :: atom().
 
 random_atom() ->
-    list_to_atom(erlang:ref_to_list(make_ref())).
+    random_atom(10).
 
 -spec random_atom(Length) -> Result when
     Length  :: pos_integer(),
     Result  :: atom().
 
 random_atom(Length) ->
-    list_to_atom(random_string(Length, "abcdefghijklmnopqrstuvwxyz1234567890")).
+    list_to_atom(random_string(Length)).
+
+-spec random_string() -> Result when
+    Result  :: list().
+
+random_string() -> random_string(10).
+
+-spec random_string(Length) -> Result when
+    Length  :: pos_integer(),
+    Result  :: list().
+
+random_string(Length) -> random_string(Length, "abcdefghijklmnopqrstuvwxyz1234567890").
 
 -spec random_string(Length, AllowedChars) -> Result when
     Length          :: pos_integer(),
