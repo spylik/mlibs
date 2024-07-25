@@ -20,6 +20,7 @@ alias weather 'curl wttr.in'
 alias dockerstart 'docker-machine restart default && docker-machine env'
 
 alias precmd "source ~/bin/precmd.csh"
+alias ssh '~/bin/ssh_wrapper.sh'
 
 # A righteous umask
 umask 22

@@ -6,9 +6,10 @@ colorscheme elflord
 " ==================
 " Key mapping
 " ==================
-map <F10> :set encoding=koi8-r<CR>
-map <F11> :set encoding=8bit-cp1251<CR>
-map <F12> :set encoding=utf-8<CR>
+map <F9> :set encoding=koi8-r<CR>
+map <F10> :set encoding=8bit-cp1251<CR>
+map <F11> :set encoding=utf-8<CR>
+map <F12> :w !pbcopy
 nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 " ==================
@@ -121,14 +122,14 @@ if &t_Co > 2 || has("gui_running")
   syntax on
 endif
 
-"Copilot settings"
-
-let g:copilot_enabled = 0
-"Option-[
-inoremap “ <Plug>(copilot-previous)
-"Option-]
-inoremap ‘ <Plug>(copilot-next)
-"Option-\
-inoremap « <Plug>(copilot-dismiss)
+""Copilot settings"
+""
+"let g:copilot_enabled = 0
+""Option-[
+"inoremap “ <Plug>(copilot-previous)
+""Option-]
+"inoremap ‘ <Plug>(copilot-next)
+""Option-\
+"inoremap « <Plug>(copilot-dismiss)
 
 
