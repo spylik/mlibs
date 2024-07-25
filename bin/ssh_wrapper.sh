@@ -1,5 +1,5 @@
 if [ ! -z $SSH_CONFIG_FILE ] ; then
-    echo "good"
+    echo "$SSH_CONFIG_FILE in use"
     exec ssh -F $SSH_CONFIG_FILE $argv
 else
     exec ssh $argv
