@@ -10,7 +10,7 @@ map <F9> :set encoding=koi8-r<CR>
 map <F10> :set encoding=8bit-cp1251<CR>
 map <F11> :set encoding=utf-8<CR>
 map <F12> :w !pbcopy
-nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
+nnoremap <F5> :let _s=@/<Bar>:%s/\t/\=repeat(' ', &tabstop)/ge<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 
 " ==================
 " Vundle section
@@ -112,7 +112,7 @@ set viminfo='50,\"1000,:50,/50,%,n~/.viminfo
 set wrapscan					" ws: search commands wrap around the end of the buffer
 set wildmenu					" wmnu: command-line completion shows a list of matches
 set nomodeline
-
+"set list
 set enc=utf-8
 set termencoding=utf-8
 
